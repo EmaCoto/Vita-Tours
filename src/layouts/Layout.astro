@@ -1,0 +1,36 @@
+---
+import Nav from "../components/Nav.astro";
+import WhatsAppButton from "../components/WhatAappButton.astro";
+import "../styles/global.css";
+
+interface Props {
+    title: string;
+    description?: string; // La hacemos opcional con el "?"
+}
+
+// Definimos un valor por defecto por si se te olvida ponerla en alguna página
+const { 
+    title = "Vita Tours Medellín | Caminatas conscientes + psicología", 
+    description = "Tours caminando en Medellín por senderos, ríos y lagos, con psicología práctica en ruta (ansiedad, estrés, bienestar). Experiencia segura y única. Reserva." 
+} = Astro.props;
+
+---
+
+<!doctype html>
+<html lang="en">
+	<head>
+		<meta charset="UTF-8" />
+		<meta name="viewport" content="width=device-width" />
+		<link rel="icon" type="image/svg+xml" href="/favicon.svg" />
+		<link rel="icon" href="/favicon.ico" />
+		<meta name="generator" content={Astro.generator} />
+		<title>{title}</title>
+		<meta name="description" content={description} />
+	</head>
+	<body>
+		<WhatsAppButton />
+		<Nav />
+		<slot />
+	</body>
+</html>
+
