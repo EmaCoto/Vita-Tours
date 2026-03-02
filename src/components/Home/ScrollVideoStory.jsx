@@ -7,7 +7,6 @@ if (typeof window !== "undefined") {
 }
 
 const totalFrames = 50; 
-// En Astro, si están en public/videos/hero-home/, la URL es:
 const frameBaseUrl = "/img/home/videos/hero-home/frame_"; 
 
 export default function ScrollVideoStory() {
@@ -19,7 +18,7 @@ export default function ScrollVideoStory() {
 
   const [step, setStep] = useState(0);
   const [imagesLoaded, setImagesLoaded] = useState(false);
-  const imagesRef = useRef([]); // Usamos ref para las imágenes para evitar re-renders innecesarios
+  const imagesRef = useRef([]); 
 
   const steps = [
     { title: "Caminar hacia afuera...", body: "Para encontrarte por dentro. Una pausa necesaria en las montañas de Medellín.", tag: "Bienvenido a Vita Tours", img: "/img/home/img1.jpg" },
@@ -32,7 +31,6 @@ export default function ScrollVideoStory() {
     let loadedCount = 0;
     const tmpImages = [];
 
-    // Precarga de imágenes
     for (let i = 1; i <= totalFrames; i++) {
       const img = new Image();
       const frameNumber = String(i).padStart(4, '0');
@@ -49,7 +47,6 @@ export default function ScrollVideoStory() {
     }
     imagesRef.current = tmpImages;
 
-    // Lógica de GSAP
     let ctx = gsap.context(() => {
       if (!imagesLoaded) return;
 
@@ -85,7 +82,7 @@ export default function ScrollVideoStory() {
           trigger: sectionRef.current,
           start: "top top",
           end: "bottom bottom",
-          scrub: 0.1, // Súper fluido
+          scrub: 0.1, 
           onUpdate: (self) => {
             const frameIndex = Math.min(
               Math.floor(self.progress * totalFrames),
@@ -93,14 +90,12 @@ export default function ScrollVideoStory() {
             );
             renderFrame(frameIndex);
 
-            // Update Steps
             const p = self.progress;
             if (p < 0.25) setStep(0);
             else if (p < 0.50) setStep(1);
             else if (p < 0.75) setStep(2);
             else setStep(3);
 
-            // Hint opacity
             gsap.to(hintRef.current, { opacity: p > 0.05 ? 0 : 1, duration: 0.3 });
           }
         }
@@ -113,7 +108,6 @@ export default function ScrollVideoStory() {
     };
   }, [imagesLoaded]);
 
-  // Animación de tarjetas
   useEffect(() => {
     if (imagesLoaded) {
       gsap.fromTo([textRef.current, imgRef.current], 
@@ -124,45 +118,45 @@ export default function ScrollVideoStory() {
   }, [step, imagesLoaded]);
 
   return (
-    <section ref={sectionRef} className="relative h-[300vh] md:h-[500vh] bg-black">
+    <section ref={sectionRef} className="relative h-[400vh] md:h-[500vh] bg-black">
       <div className="sticky top-0 h-screen w-full overflow-hidden">
         
-        {/* Loader simple */}
         {!imagesLoaded && (
           <div className="absolute inset-0 flex items-center justify-center text-white z-50 bg-black">
             <span className="animate-pulse tracking-widest uppercase text-xs">Cargando experiencia...</span>
           </div>
         )}
 
-        <canvas ref={canvasRef} className="absolute inset-0 w-full h-full object-cover brightness-[0.6] contrast-[1.05]" />
-        
-        <div className="absolute inset-0 bg-gradient-to-b from-black/60 via-transparent to-black/90" />
+        <canvas ref={canvasRef} className="absolute inset-0 w-full h-full object-cover brightness-[0.7] contrast-[1.05]" />
 
         <div className="absolute inset-0 flex items-center justify-center px-6 md:px-24 pointer-events-none">
           <div className="flex flex-col md:flex-row items-center justify-between w-full max-w-6xl gap-6 md:gap-12">
             
             <div ref={textRef} className="max-w-lg bg-black/40 backdrop-blur-xl p-6 md:p-10 rounded-lg border border-white/10">
-              <span className="inline-block text-[#38F5C4] font-medium text-[9px] md:text-xs uppercase mb-3 bg-[#38F5C4]/10 px-3 py-1 rounded-full tracking-widest">
+              <span className="inline-block text-[#38F5C4] font-medium text-base md:text-sm uppercase mb-3 bg-[#38F5C4]/10 px-3 py-1 rounded-full tracking-widest">
                 {steps[step].tag}
               </span>
               <h2 className="text-xl md:text-2xl font-bold text-white mb-3 uppercase tracking-tight">
                 {steps[step].title}
               </h2>
-              <p className="text-sm md:text-base text-white/70 leading-relaxed font-light">
+              <p className="text-md md:text-lg text-white/80 leading-relaxed font-light">
                 {steps[step].body}
               </p>
             </div>
 
             <div ref={imgRef} className="shrink-0">
-              <img src={steps[step].img} className="w-36 h-48 md:w-64 md:h-96 object-cover rounded-lg border border-white/20 shadow-2xl" />
+              <img src={steps[step].img} className="w-36 h-48 md:w-127 md:h-96 object-cover rounded-lg border border-white/20 shadow-2xl" />
             </div>
           </div>
         </div>
 
-        <div ref={hintRef} className="absolute bottom-10 left-1/2 -translate-x-1/2 flex flex-col items-center gap-2">
-          <span className="text-white/30 text-[9px] uppercase tracking-[0.3em]">Desliza</span>
-          <div className="w-[1px] h-10 bg-gradient-to-b from-[#38F5C4] to-transparent relative overflow-hidden">
-            <div className="absolute top-0 left-0 w-full h-1/2 bg-white/40 animate-scroll-line" />
+        {/* INDICADOR REESTABLECIDO: Desliza para sentir */}
+        <div ref={hintRef} className="absolute bottom-10 left-1/2 -translate-x-1/2 flex flex-col items-center gap-3 pointer-events-none">
+          <span className="text-white/40 text-[10px] uppercase tracking-[0.3em] font-bold">
+            Desliza para sentir
+          </span>
+          <div className="w-px h-12 bg-linear-to-b from-[#38F5C4] to-transparent relative overflow-hidden">
+            <div className="absolute top-0 left-0 w-full h-1/2 bg-white/60 animate-scroll-line" />
           </div>
         </div>
 
