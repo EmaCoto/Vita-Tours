@@ -46,8 +46,8 @@ export default function ScrollVideoStory() {
 
   useEffect(() => {
     const section = sectionRef.current;
-    const video = videoRef.current;
     const canvas = canvasRef.current;
+    const video = videoRef.current;
     if (!section || !video || !canvas) return;
 
     const ctx = canvas.getContext("2d");
@@ -102,18 +102,20 @@ export default function ScrollVideoStory() {
       setStep(s);
     };
 
-    window.addEventListener("resize", resize);
-    window.addEventListener("scroll", onScroll, { passive: true });
+    // 1. Forzar carga y "despertar" el video para producción
+    video.load();
     
-    const startApp = () => {
-      video.play().then(() => {
+    const startApp = async () => {
+      try {
+        await video.play();
         video.pause();
         resize();
         requestRef.current = requestAnimationFrame(update);
-      }).catch(() => {
+      } catch (err) {
+        console.warn("Video auto-play blocked, interaction needed or muted missing.");
         resize();
         requestRef.current = requestAnimationFrame(update);
-      });
+      }
     };
 
     if (video.readyState >= 2) {
@@ -121,6 +123,9 @@ export default function ScrollVideoStory() {
     } else {
       video.addEventListener("loadeddata", startApp);
     }
+
+    window.addEventListener("resize", resize);
+    window.addEventListener("scroll", onScroll, { passive: true });
 
     return () => {
       window.removeEventListener("resize", resize);
@@ -132,13 +137,10 @@ export default function ScrollVideoStory() {
   return (
     <section ref={sectionRef} className="relative h-[500vh] bg-black">
       <div className="sticky top-0 h-screen w-full overflow-hidden">
-        
         <video
           ref={videoRef}
           src="/videos/home/hero-home.mp4"
-          muted 
-          playsInline 
-          preload="auto"
+          muted playsInline preload="auto"
           className="hidden"
         />
 
@@ -149,19 +151,17 @@ export default function ScrollVideoStory() {
 
         <div className="absolute inset-0 bg-linear-to-b from-black/40 via-transparent to-black/70" />
 
-        {/* Contenedor principal ajustado para alinear texto e imagen de lado a lado */}
         <div className="absolute inset-0 flex items-center justify-center px-8 md:px-24 pointer-events-none">
           <div className="flex flex-col md:flex-row items-center justify-between w-full max-w-7xl gap-12">
             
             <AnimatePresence mode="wait">
-              {/* Contenedor de Texto */}
               <motion.div
                 key={`text-${step}`}
                 initial={{ opacity: 0, x: -30, filter: "blur(10px)" }}
                 animate={{ opacity: 1, x: 0, filter: "blur(0px)" }}
                 exit={{ opacity: 0, x: -30, filter: "blur(10px)" }}
                 transition={{ duration: 0.6, ease: "easeOut" }}
-                className="max-w-xl bg-black/20 backdrop-blur-md p-8 rounded-3xl border border-white/10"
+                className="max-w-xl bg-black/20 backdrop-blur-md p-8 rounded-xl border border-white/10"
               >
                 <span className="inline-block text-[#38F5C4] font-medium tracking-wider text-xs uppercase mb-3 bg-[#38F5C4]/10 px-3 py-1 rounded-full">
                   {steps[step].tag}
@@ -174,7 +174,6 @@ export default function ScrollVideoStory() {
                 </p>
               </motion.div>
 
-              {/* Contenedor de Imagen a la derecha */}
               <motion.div
                 key={`img-${step}`}
                 initial={{ opacity: 0, x: 30, filter: "blur(10px)" }}
@@ -186,11 +185,10 @@ export default function ScrollVideoStory() {
                 <img 
                   src={steps[step].img} 
                   alt={steps[step].title} 
-                  className="w-48 h-115 md:w-80 md:h-115 object-cover rounded-3xl border border-white/10 shadow-2xl" 
+                  className="w-48 h-72 md:w-80 md:h-112.5 object-cover rounded-xl border border-white/10 shadow-2xl" 
                 />
               </motion.div>
             </AnimatePresence>
-
           </div>
         </div>
 
@@ -215,7 +213,6 @@ export default function ScrollVideoStory() {
             />
           ))}
         </div>
-
       </div>
     </section>
   );
