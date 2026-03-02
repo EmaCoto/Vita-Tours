@@ -1,0 +1,16 @@
+---
+import Layout from '../../layouts/Layout.astro';
+import { getCollection } from 'astro:content';
+import ToursGrid from '../../components/tours/ToursGrid.jsx';
+
+const allTours = await getCollection('tours');
+---
+
+<Layout title="Tours - Vita Tours">
+  <div class="pt-32 pb-10 px-6 text-center bg-white">
+    <span class="text-[#38F5C4] font-bold text-xs uppercase tracking-[0.3em]">Experiencias</span>
+    <h1 class="text-3xl md:text-4xl font-black text-gray-900 mt-4 uppercase italic">Elige tu propia ruta de sanación</h1>
+  </div>
+  
+  <ToursGrid initialTours={allTours} client:load />
+</Layout>

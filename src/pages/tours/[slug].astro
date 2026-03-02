@@ -1,0 +1,97 @@
+---
+import Layout from '../../layouts/Layout.astro';
+import { getCollection } from 'astro:content';
+import TourDetailHero from '../../components/tours/TourDetailHero.jsx';
+
+export async function getStaticPaths() {
+  const tours = await getCollection('tours');
+  return tours.map(tour => ({
+    params: { slug: tour.slug }, props: { tour },
+  }));
+}
+
+const { tour } = Astro.props;
+const { Content } = await tour.render();
+
+// Configuración de la secuencia de imágenes para este tour
+const totalFrames = 50; 
+const framePath = `/img/tours/${tour.slug}/`; // Basado en el slug
+---
+
+<Layout title={tour.data.nombre}>
+  <TourDetailHero 
+    tour={tour.data} 
+    totalFrames={totalFrames} 
+    framePath={framePath} 
+    client:load 
+  />
+
+  <main class="relative bg-white z-10 -mt-20 rounded-t-[40px] shadow-2xl pb-20">
+    <div class="max-w-6xl mx-auto px-6 pt-16">
+      
+      <div class="grid grid-cols-1 lg:grid-cols-3 gap-16">
+        <div class="lg:col-span-2">
+          <h3 class="text-2xl font-black mb-8 uppercase italic border-l-4 border-[#38F5C4] pl-6">Detalles de la Experiencia</h3>
+          <div class="prose prose-lg text-gray-700 font-light leading-relaxed">
+            <p class="text-xl mb-10 text-gray-500 italic">{tour.data.descripcion}</p>
+            <Content />
+          </div>
+
+          <div class="grid grid-cols-2 md:grid-cols-4 gap-6 mt-16 p-8 bg-gray-50 rounded-lg border border-gray-100">
+            <div>
+              <p class="text-[10px] text-gray-400 uppercase font-bold tracking-widest">Destino</p>
+              <p class="text-sm font-medium">{tour.data.lugarDestino}</p>
+            </div>
+            <div>
+              <p class="text-[10px] text-gray-400 uppercase font-bold tracking-widest">Hora</p>
+              <p class="text-sm font-medium">{tour.data.horaSalida}</p>
+            </div>
+            <div>
+              <p class="text-[10px] text-gray-400 uppercase font-bold tracking-widest">Duración</p>
+              <p class="text-sm font-medium">{tour.data.duracion}</p>
+            </div>
+            <div>
+               <p class="text-[10px] text-gray-400 uppercase font-bold tracking-widest">Punto de encuentro</p>
+               <p class="text-sm font-medium">{tour.data.puntoEncuentro}</p>
+            </div>
+          </div>
+        </div>
+
+        <div class="space-y-10">
+          <div class="bg-black text-white p-8 rounded-lg shadow-xl">
+            <h3 class="text-xs font-bold mb-6 uppercase tracking-[0.2em] text-[#38F5C4]">Lo que incluye</h3>
+            <ul class="space-y-4">
+              {tour.data.loQueIncluye.map(item => (
+                <li class="flex items-start gap-3 text-sm font-light">
+                  <span class="text-[#38F5C4]">✔</span> {item}
+                </li>
+              ))}
+            </ul>
+            <button class="w-full mt-10 bg-[#38F5C4] text-black py-4 rounded-md font-black uppercase tracking-widest hover:scale-[1.02] transition-transform">
+              Reservar ahora
+            </button>
+          </div>
+        </div>
+      </div>
+
+      <section class="mt-32">
+        <h3 class="text-2xl font-black mb-12 uppercase italic text-center">Galería del Camino</h3>
+        <div class="grid grid-cols-2 md:grid-cols-4 gap-4">
+          {/* Aquí puedes mapear imágenes reales si las tienes, o frames clave */}
+          <div class="h-64 rounded-lg overflow-hidden border border-gray-100 shadow-sm">
+            <img src={`${framePath}frame_0001.jpg`} class="w-full h-full object-cover hover:scale-110 transition-transform duration-500" />
+          </div>
+          <div class="h-64 rounded-lg overflow-hidden border border-gray-100 shadow-sm">
+            <img src={`${framePath}frame_0015.jpg`} class="w-full h-full object-cover hover:scale-110 transition-transform duration-500" />
+          </div>
+          <div class="h-64 rounded-lg overflow-hidden border border-gray-100 shadow-sm">
+            <img src={`${framePath}frame_0030.jpg`} class="w-full h-full object-cover hover:scale-110 transition-transform duration-500" />
+          </div>
+          <div class="h-64 rounded-lg overflow-hidden border border-gray-100 shadow-sm">
+            <img src={`${framePath}frame_0050.jpg`} class="w-full h-full object-cover hover:scale-110 transition-transform duration-500" />
+          </div>
+        </div>
+      </section>
+    </div>
+  </main>
+</Layout>

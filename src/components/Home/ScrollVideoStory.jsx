@@ -27,42 +27,73 @@ export default function ScrollVideoStory() {
     { title: "No es solo un tour, es una transformación", body: "Sal del estancamiento mental. El movimiento libera lo que las palabras a veces no pueden.", tag: "Bienestar en Movimiento", img: "/img/home/img3.jpg" },
   ];
 
+  // --- Script de Optimización de Carga ---
   useEffect(() => {
     let loadedCount = 0;
     const tmpImages = [];
 
-    for (let i = 1; i <= totalFrames; i++) {
-      const img = new Image();
-      const frameNumber = String(i).padStart(4, '0');
-      img.src = `${frameBaseUrl}${frameNumber}.jpg`;
-      
-      img.onload = () => {
-        loadedCount++;
-        if (loadedCount === totalFrames) {
-          setImagesLoaded(true);
-        }
-      };
-      img.onerror = () => console.error("Error cargando frame:", img.src);
-      tmpImages.push(img);
-    }
-    imagesRef.current = tmpImages;
+    const renderFrame = (img) => {
+      if (!canvasRef.current || !img) return;
+      const canvas = canvasRef.current;
+      const context = canvas.getContext("2d");
+      const scale = Math.max(canvas.width / img.width, canvas.height / img.height);
+      const w = img.width * scale;
+      const h = img.height * scale;
+      const x = (canvas.width - w) / 2;
+      const y = (canvas.height - h) / 2;
+      context.clearRect(0, 0, canvas.width, canvas.height);
+      context.drawImage(img, x, y, w, h);
+    };
+
+    // 1. Cargar Primer Frame con prioridad para visualización inmediata
+    const firstFrame = new Image();
+    firstFrame.src = `${frameBaseUrl}0001.jpg`;
+    firstFrame.onload = () => {
+      tmpImages[0] = firstFrame;
+      imagesRef.current[0] = firstFrame;
+      renderFrame(firstFrame);
+    };
+
+    // 2. Carga Asíncrona del resto de la secuencia
+    const loadSequence = async () => {
+      const promises = Array.from({ length: totalFrames }, (_, i) => {
+        return new Promise((resolve) => {
+          const img = new Image();
+          const frameNumber = String(i + 1).padStart(4, '0');
+          img.src = `${frameBaseUrl}${frameNumber}.jpg`;
+          img.onload = () => {
+            loadedCount++;
+            tmpImages[i] = img;
+            resolve();
+          };
+          img.onerror = () => resolve(); // No bloqueamos si un frame falla
+        });
+      });
+
+      await Promise.all(promises);
+      imagesRef.current = tmpImages;
+      setImagesLoaded(true);
+    };
+
+    loadSequence();
+  }, []);
+
+  // --- Lógica GSAP ---
+  useEffect(() => {
+    if (!imagesLoaded) return;
 
     let ctx = gsap.context(() => {
-      if (!imagesLoaded) return;
-
       const canvas = canvasRef.current;
       const context = canvas.getContext("2d");
 
       const renderFrame = (index) => {
         const img = imagesRef.current[index];
         if (!img || !img.complete) return;
-
         const scale = Math.max(canvas.width / img.width, canvas.height / img.height);
         const w = img.width * scale;
         const h = img.height * scale;
         const x = (canvas.width - w) / 2;
         const y = (canvas.height - h) / 2;
-
         context.clearRect(0, 0, canvas.width, canvas.height);
         context.drawImage(img, x, y, w, h);
       };
@@ -70,7 +101,8 @@ export default function ScrollVideoStory() {
       const resize = () => {
         canvas.width = window.innerWidth;
         canvas.height = window.innerHeight;
-        renderFrame(Math.floor(ScrollTrigger.getById("videoScroll")?.progress * (totalFrames - 1)) || 0);
+        const currentProgress = ScrollTrigger.getById("videoScroll")?.progress || 0;
+        renderFrame(Math.floor(currentProgress * (totalFrames - 1)));
       };
 
       window.addEventListener("resize", resize);
@@ -102,10 +134,7 @@ export default function ScrollVideoStory() {
       });
     }, sectionRef);
 
-    return () => {
-      ctx.revert();
-      window.removeEventListener("resize", () => {});
-    };
+    return () => ctx.revert();
   }, [imagesLoaded]);
 
   useEffect(() => {
@@ -122,8 +151,8 @@ export default function ScrollVideoStory() {
       <div className="sticky top-0 h-screen w-full overflow-hidden">
         
         {!imagesLoaded && (
-          <div className="absolute inset-0 flex items-center justify-center text-white z-50 bg-black">
-            <span className="animate-pulse tracking-widest uppercase text-xs">Cargando experiencia...</span>
+          <div className="absolute inset-0 flex items-center justify-center text-white z-50 bg-black/50 backdrop-blur-sm">
+            <span className="animate-pulse tracking-widest uppercase text-[10px]">Optimizando experiencia...</span>
           </div>
         )}
 
@@ -150,7 +179,6 @@ export default function ScrollVideoStory() {
           </div>
         </div>
 
-        {/* INDICADOR REESTABLECIDO: Desliza para sentir */}
         <div ref={hintRef} className="absolute bottom-10 left-1/2 -translate-x-1/2 flex flex-col items-center gap-3 pointer-events-none">
           <span className="text-white/40 text-[10px] uppercase tracking-[0.3em] font-bold">
             Desliza para sentir
