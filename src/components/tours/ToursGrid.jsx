@@ -13,14 +13,14 @@ export default function ToursGrid({ initialTours }) {
   });
 
   return (
-    <section className="py-20 px-6 max-w-7xl mx-auto bg-white">
+    <section className="py-20 px-6 max-w-7xl mx-auto">
       {/* Buscador y Filtros */}
       <div className="flex flex-col md:flex-row justify-between items-center mb-12 gap-6">
         <div className="relative w-full md:max-w-md">
           <input
             type="text"
             placeholder="Buscar tu próximo camino..."
-            className="w-full px-6 py-3 rounded-lg border border-gray-100 bg-gray-50 focus:outline-none focus:ring-2 focus:ring-[#38F5C4] transition-all text-gray-700"
+            className="w-full px-6 py-3 rounded-lg border border-gray-500 bg-gray-100 focus:outline-none focus:ring-2 focus:ring-[#38F5C4] transition-all text-gray-700"
             onChange={(e) => setSearch(e.target.value)}
           />
         </div>
@@ -33,7 +33,7 @@ export default function ToursGrid({ initialTours }) {
               className={`px-5 py-2 rounded-full text-xs font-semibold uppercase tracking-widest transition-all ${
                 filter === tag 
                 ? 'bg-[#38F5C4] text-black shadow-lg shadow-[#38F5C4]/20' 
-                : 'bg-gray-100 text-gray-500 hover:bg-gray-200'
+                : 'bg-gray-100 border-gray-500 border text-gray-500 hover:bg-gray-200'
               }`}
             >
               {tag}
@@ -48,7 +48,7 @@ export default function ToursGrid({ initialTours }) {
           <a 
             href={`/tours/${tour.slug}`} 
             key={tour.slug}
-            className="group block bg-white rounded-lg overflow-hidden border border-gray-100 hover:shadow-xl transition-all duration-500"
+            className="group block bg-white rounded-lg overflow-hidden border border-gray-500 shadow-lg transition-all duration-500"
           >
             <div className="relative h-64 overflow-hidden">
               <img 
