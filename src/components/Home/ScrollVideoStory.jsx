@@ -8,7 +8,7 @@ if (typeof window !== "undefined") {
 
 const totalFrames = 50; 
 // En Astro, si están en public/videos/hero-home/, la URL es:
-const frameBaseUrl = "/videos/hero-home/frame_"; 
+const frameBaseUrl = "/img/home/videos/hero-home/frame_"; 
 
 export default function ScrollVideoStory() {
   const sectionRef = useRef(null);
