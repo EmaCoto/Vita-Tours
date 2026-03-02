@@ -145,7 +145,7 @@ export default function ScrollVideoStory() {
             </div>
 
             <div ref={imgRef} className="shrink-0">
-              <img src={steps[step].img} className="w-36 h-48 md:w-127 md:h-96 object-cover rounded-lg border border-white/20 shadow-2xl" />
+              <img src={steps[step].img} className="w-98 h-48 md:w-127 md:h-96 object-cover rounded-lg border border-white/20 shadow-2xl" />
             </div>
           </div>
         </div>
