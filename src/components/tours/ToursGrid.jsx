@@ -1,8 +1,22 @@
-import { useState } from 'react';
+import { useState, useEffect } from 'react';
 
 export default function ToursGrid({ initialTours }) {
   const [search, setSearch] = useState('');
   const [filter, setFilter] = useState('Todos');
+
+  // Lógica para capturar el filtro de la URL al cargar la página
+  useEffect(() => {
+    const params = new URLSearchParams(window.location.search);
+    const filterParam = params.get('filter');
+    
+    if (filterParam) {
+      // Si el tag existe en tus datos, lo aplicamos
+      const exists = initialTours.some(t => t.data.tag === filterParam);
+      if (exists) {
+        setFilter(filterParam);
+      }
+    }
+  }, []);
 
   const tags = ['Todos', ...new Set(initialTours.map(t => t.data.tag))];
 
@@ -44,42 +58,48 @@ export default function ToursGrid({ initialTours }) {
 
       {/* Grid */}
       <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-8">
-        {filteredTours.map(tour => (
-          <a 
-            href={`/tours/${tour.slug}`} 
-            key={tour.slug}
-            className="group block bg-white rounded-lg overflow-hidden border border-gray-500 shadow-lg transition-all duration-500"
-          >
-            <div className="relative h-64 overflow-hidden">
-              <img 
-                src={tour.data.imagen} 
-                className="w-full h-full object-cover group-hover:scale-110 transition-transform duration-700"
-                alt={tour.data.nombre}
-              />
-              <div className="absolute top-4 left-4 bg-white/90 backdrop-blur-md px-3 py-1 rounded-full">
-                <span className="text-[10px] font-bold uppercase tracking-tighter text-gray-800">{tour.data.tag}</span>
+        {filteredTours.length > 0 ? (
+          filteredTours.map(tour => (
+            <a 
+              href={`/tours/${tour.slug}`} 
+              key={tour.slug}
+              className="group block bg-white rounded-lg overflow-hidden border border-gray-500 shadow-lg transition-all duration-500"
+            >
+              <div className="relative h-64 overflow-hidden">
+                <img 
+                  src={tour.data.imagen} 
+                  className="w-full h-full object-cover group-hover:scale-110 transition-transform duration-700"
+                  alt={tour.data.nombre}
+                />
+                <div className="absolute top-4 left-4 bg-white/90 backdrop-blur-md px-3 py-1 rounded-full">
+                  <span className="text-[10px] font-bold uppercase tracking-tighter text-gray-800">{tour.data.tag}</span>
+                </div>
               </div>
-            </div>
-            
-            <div className="p-8">
-              <h3 className="text-xl font-bold text-gray-900 mb-2 group-hover:text-[#38F5C4] transition-colors">
-                {tour.data.nombre}
-              </h3>
-              <p className="text-gray-500 text-sm mb-6 line-clamp-2 font-light italic">
-                "{tour.data.titulo}"
-              </p>
               
-              <div className="flex flex-wrap gap-y-3 border-t border-gray-50 pt-6">
-                <div className="w-1/2 text-[11px] text-gray-400 uppercase tracking-widest">
-                  <span className="block font-bold text-gray-900">{tour.data.fechaSalida}</span> Fecha
-                </div>
-                <div className="w-1/2 text-[11px] text-gray-400 uppercase tracking-widest">
-                  <span className="block font-bold text-gray-900">{tour.data.duracion}</span> Duración
+              <div className="p-8">
+                <h3 className="text-xl font-bold text-gray-900 mb-2 group-hover:text-[#38F5C4] transition-colors">
+                  {tour.data.nombre}
+                </h3>
+                <p className="text-gray-500 text-sm mb-6 line-clamp-2 font-light italic">
+                  "{tour.data.titulo}"
+                </p>
+                
+                <div className="flex flex-wrap gap-y-3 border-t border-gray-50 pt-6">
+                  <div className="w-1/2 text-[11px] text-gray-400 uppercase tracking-widest">
+                    <span className="block font-bold text-gray-900">{tour.data.fechaSalida}</span> Fecha
+                  </div>
+                  <div className="w-1/2 text-[11px] text-gray-400 uppercase tracking-widest">
+                    <span className="block font-bold text-gray-900">{tour.data.duracion}</span> Duración
+                  </div>
                 </div>
               </div>
-            </div>
-          </a>
-        ))}
+            </a>
+          ))
+        ) : (
+          <div className="col-span-full text-center py-20">
+            <p className="text-gray-400 italic">No encontramos tours en esta categoría...</p>
+          </div>
+        )}
       </div>
     </section>
   );

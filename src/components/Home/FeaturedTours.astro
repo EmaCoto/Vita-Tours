@@ -4,54 +4,62 @@ const tours = await getCollection('tours');
 ---
 
 <section class="bg-white py-24 overflow-hidden relative z-99 -mt-10 rounded-t-[40px]">
-  <div class="max-w-7xl mx-auto">
+  <div class="max-w-7xl mx-auto px-4">
     
-    <div class="flex flex-col md:flex-row justify-between items-center mb-15 gap-8">
+    <div class="flex flex-col md:flex-row justify-between items-center md:mb-10 gap-8">
       <div>
         <span class="text-[#38F5C4] font-bold text-[10px] uppercase tracking-[0.4em] block mb-2 text-center md:text-left">Explora el catálogo</span>
         <h2 class="text-3xl font-black text-gray-900 uppercase italic leading-none text-center md:text-left">Rutas Activas</h2>
       </div>
 
-      <div class="flex items-center gap-6 bg-gray-300 p-2 rounded-full shadow-md">
+      <div class="flex items-center gap-6 bg-gray-100 p-2 rounded-full shadow-md border border-gray-200">
         <button id="prevBtn" class="group p-4 bg-white rounded-full shadow-sm hover:bg-black transition-all duration-300 cursor-pointer">
-          <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="3" class="group-hover:text-[#38F5C4] text-gray-400 transition-colors"><path d="M15 18l-6-6 6-6"/></svg>
+          <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="3" class="group-hover:text-[#38F5C4] text-gray-400 transition-colors">
+            <path d="M15 18l-6-6 6-6"/>
+          </svg>
         </button>
         
         <div id="counter-display" class="text-center min-w-25">
-          <span class="text-xs font-black text-gray-900 uppercase tracking-tighter italic">Vista 01 / {tours.length}</span>
+          <span class="text-xs font-black text-gray-900 uppercase tracking-tighter italic">
+            Vista 01 / {tours.length.toString().padStart(2, '0')}
+          </span>
         </div>
 
         <button id="nextBtn" class="group p-4 bg-white rounded-full shadow-sm hover:bg-black transition-all duration-300 cursor-pointer">
-          <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="3" class="group-hover:text-[#38F5C4] text-gray-400 transition-colors"><path d="M9 5l6 6-6 6"/></svg>
+          <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="3" class="group-hover:text-[#38F5C4] text-gray-400 transition-colors">
+            <path d="M9 5l6 6-6 6"/>
+          </svg>
         </button>
       </div>
     </div>
 
-    <div class="relative min-h-80 flex items-center justify-center">
-      <div id="stack-container" class="relative w-full max-w-250 h-80 cursor-grab active:cursor-grabbing">
+    <div class="relative min-h-112.5 md:min-h-100 flex items-center justify-center">
+      <div id="stack-container" class="relative w-full max-w-250 h-80 cursor-grab active:cursor-grabbing touch-none">
         {tours.map((tour, index) => (
           <div 
-            class="tour-card absolute top-0 w-full max-w-112.5 h-full transition-all duration-700 ease-[cubic-bezier(0.25,1,0.5,1)] "
+            class="tour-card absolute top-0 w-full transition-all duration-700"
             data-index={index}
           >
-            <a href={`/tours/${tour.slug}`} class="block h-75 w-full pointer-events-none md:pointer-events-auto ">
-              <div class="relative h-full w-full rounded-xl overflow-hidden shadow-xl border border-gray-100 bg-black">
+            <a href={`/tours/${tour.slug}`} class="block h-80 w-full pointer-events-none md:pointer-events-auto">
+              <div class="relative h-full w-full rounded-2xl overflow-hidden shadow-2xl border border-gray-100 bg-black">
                 <img 
                   src={tour.data.imagen} 
-                  class="absolute inset-0 w-full h-full object-cover opacity-80" 
+                  class="absolute inset-0 w-full h-full object-cover opacity-70" 
                   alt={tour.data.nombre}
                   draggable="false"
                 />
-                <div class="absolute inset-0 bg-linear-to-t from-black via-black/10 to-transparent"></div>
+                <div class="absolute inset-0 bg-linear-to-t from-black via-black/20 to-transparent"></div>
                 
-                <div class="absolute bottom-0 left-0 p-8 w-full">
-                  <span class="bg-[#38F5C4] text-black text-[8px] font-black uppercase tracking-widest px-2 py-1 rounded-sm mb-4 inline-block">
+                <div class="absolute bottom-0 left-0 p-6 md:p-8 w-full">
+                  <span class="bg-[#38F5C4] text-black text-[9px] font-black uppercase tracking-widest px-2 py-1 rounded-sm mb-4 inline-block">
                     {tour.data.tag}
                   </span>
-                  <h3 class="text-white text-xl md:text-2xl font-black uppercase italic leading-tight mb-2 tracking-tighter">
+                  <h3 class="text-white text-2xl md:text-3xl font-black uppercase italic leading-tight mb-2 tracking-tighter">
                     {tour.data.nombre}
                   </h3>
-                  <p class="text-white/40 text-[10px] font-bold uppercase tracking-widest">{tour.data.duracion} • {tour.data.lugarDestino}</p>
+                  <p class="text-white/60 text-[10px] font-bold uppercase tracking-widest">
+                    {tour.data.duracion} • {tour.data.lugarDestino}
+                  </p>
                 </div>
               </div>
             </a>
@@ -74,37 +82,65 @@ const tours = await getCollection('tours');
   let isDragging = false;
 
   function updateStack() {
+    const isMobile = window.innerWidth < 768;
+
     cards.forEach((card, i) => {
       const htmlCard = card as HTMLElement;
+      const distance = i - currentIndex;
       
-      // Lógica de "Foco Dual"
-      // Si i es igual al currentIndex o al currentIndex + 1, están enfocados.
-      const isFocused = (i === currentIndex || i === currentIndex + 1);
-      
-      if (isFocused) {
-        // POSICIONES ENFOCADAS (CENTRALES)
-        const sideOffset = (i === currentIndex) ? -240 : 240; // Se separan del centro
-        htmlCard.style.transform = `translateX(${sideOffset}px) scale(1) translateZ(0) rotateY(0)`;
-        htmlCard.style.opacity = '1';
-        htmlCard.style.zIndex = '30';
-        htmlCard.style.filter = 'blur(0px)';
+      if (isMobile) {
+        // --- LÓGICA MÓVIL: STACK VERTICAL HACIA ATRÁS ---
+        if (distance === 0) {
+          // Tarjeta en foco
+          htmlCard.style.transform = `translateX(0) translateY(0) scale(1) translateZ(0)`;
+          htmlCard.style.opacity = '1';
+          htmlCard.style.zIndex = '40';
+          htmlCard.style.filter = 'blur(0px)';
+          htmlCard.style.visibility = 'visible';
+        } else if (distance > 0 && distance <= 3) {
+          // Tarjetas que se asoman atrás
+          const yOffset = distance * -15; 
+          const scale = 1 - (distance * 0.06);
+          const zOffset = distance * -40;
+          
+          htmlCard.style.transform = `translateX(0) translateY(${yOffset}px) scale(${scale}) translateZ(${zOffset}px)`;
+          htmlCard.style.opacity = (0.5 / distance).toString();
+          htmlCard.style.zIndex = (30 - distance).toString();
+          htmlCard.style.filter = 'blur(2px) brightness(0.8)';
+          htmlCard.style.visibility = 'visible';
+        } else {
+          // Ocultas (anteriores o muy lejanas)
+          const side = distance < 0 ? -100 : 100;
+          htmlCard.style.transform = `translateX(${side}%) scale(0.5)`;
+          htmlCard.style.opacity = '0';
+          htmlCard.style.zIndex = '0';
+          htmlCard.style.visibility = 'hidden';
+        }
       } else {
-        // POSICIONES DE FONDO (ATRAS)
-        const distance = i - currentIndex;
-        const side = distance > 0 ? 1 : -1;
-        const absDistance = Math.abs(distance);
+        // --- LÓGICA ESCRITORIO: FOCO DUAL ---
+        const isFocused = (i === currentIndex || i === currentIndex + 1);
+        htmlCard.style.visibility = 'visible';
         
-        // Calculamos el desfase basándonos en si están a la izquierda del primer foco o derecha del segundo
-        const xBase = side > 0 ? 380 : -380;
-        const xOffset = xBase + (side * (absDistance * 80));
-        const zOffset = absDistance * -200;
-        const scale = 0.8 - (absDistance * 0.05);
-        const rotate = side * -20;
+        if (isFocused) {
+          const sideOffset = (i === currentIndex) ? -240 : 240;
+          htmlCard.style.transform = `translateX(${sideOffset}px) scale(1) translateZ(0) rotateY(0)`;
+          htmlCard.style.opacity = '1';
+          htmlCard.style.zIndex = '30';
+          htmlCard.style.filter = 'blur(0px)';
+        } else {
+          const side = distance > 0 ? 1 : -1;
+          const absDistance = Math.abs(distance);
+          const xBase = side > 0 ? 380 : -380;
+          const xOffset = xBase + (side * (absDistance * 80));
+          const zOffset = absDistance * -200;
+          const scale = 0.8 - (absDistance * 0.05);
+          const rotate = side * -15;
 
-        htmlCard.style.transform = `translateX(${xOffset}px) translateZ(${zOffset}px) scale(${scale}) rotateY(${rotate}deg)`;
-        htmlCard.style.opacity = '0.3';
-        htmlCard.style.zIndex = '10';
-        htmlCard.style.filter = 'blur(4px)';
+          htmlCard.style.transform = `translateX(${xOffset}px) translateZ(${zOffset}px) scale(${scale}) rotateY(${rotate}deg)`;
+          htmlCard.style.opacity = '0.3';
+          htmlCard.style.zIndex = '10';
+          htmlCard.style.filter = 'blur(4px)';
+        }
       }
     });
 
@@ -114,32 +150,26 @@ const tours = await getCollection('tours');
   }
 
   const goNext = () => {
-    // Permitimos avanzar hasta el penúltimo para que siempre haya dos al frente
-    if (currentIndex < cards.length - 2) {
-      currentIndex++;
-      updateStack();
-    } else {
-      currentIndex = 0; // Loop opcional
-      updateStack();
-    }
+    const isMobile = window.innerWidth < 768;
+    const limit = isMobile ? cards.length - 1 : cards.length - 2;
+    if (currentIndex < limit) currentIndex++; else currentIndex = 0;
+    updateStack();
   };
 
   const goPrev = () => {
-    if (currentIndex > 0) {
-      currentIndex--;
-      updateStack();
-    }
+    if (currentIndex > 0) currentIndex--; else currentIndex = cards.length - (window.innerWidth < 768 ? 1 : 2);
+    updateStack();
   };
 
   nextBtn?.addEventListener('click', goNext);
   prevBtn?.addEventListener('click', goPrev);
 
-  // Arrastre
+  // GESTOS TÁCTILES Y ARRASTRE
   const handleStart = (x: number) => { startX = x; isDragging = true; };
   const handleMove = (x: number) => {
     if (!isDragging) return;
     const diff = startX - x;
-    if (Math.abs(diff) > 80) {
+    if (Math.abs(diff) > 60) {
       if (diff > 0) goNext(); else goPrev();
       isDragging = false;
     }
@@ -148,34 +178,39 @@ const tours = await getCollection('tours');
   container?.addEventListener('mousedown', (e) => handleStart(e.pageX));
   window.addEventListener('mousemove', (e) => handleMove(e.pageX));
   window.addEventListener('mouseup', () => isDragging = false);
-  container?.addEventListener('touchstart', (e) => handleStart(e.touches[0].pageX));
-  container?.addEventListener('touchmove', (e) => handleMove(e.touches[0].pageX));
+  container?.addEventListener('touchstart', (e) => handleStart(e.touches[0].pageX), {passive: true});
+  container?.addEventListener('touchmove', (e) => handleMove(e.touches[0].pageX), {passive: true});
   window.addEventListener('touchend', () => isDragging = false);
 
+  window.addEventListener('resize', updateStack);
   updateStack();
 </script>
 
 <style>
   #stack-container {
-    perspective: 1500px;
+    perspective: 1200px;
     transform-style: preserve-3d;
   }
+  
   .tour-card {
     will-change: transform, opacity;
     left: 50%;
-    margin-left: -225px; /* Mitad de max-w-450px */
+    /* Centrado dinámico según dispositivo */
+    transform: translateX(-50%);
+    transition: all 0.6s cubic-bezier(0.23, 1, 0.32, 1);
   }
-  
-  /* Ajuste para móvil (en móvil es mejor ver solo uno enfocado) */
-  @media (max-width: 768px) {
+
+  @media (min-width: 768px) {
     .tour-card {
-        margin-left: 0;
-        left: 0;
-        max-width: 100%;
+      max-width: 450px;
+      margin-left: -225px; /* Mitad del ancho fijo */
     }
-    /* En móvil forzamos que el offset sea 0 para que no se salgan de pantalla */
-    .tour-card[style*="translateX"] {
-        transform: translateX(0) !important;
+  }
+
+  @media (max-width: 767px) {
+    .tour-card {
+      width: 90%;
+      margin-left: -45%; /* Centra el 90% de ancho */
     }
   }
 </style>

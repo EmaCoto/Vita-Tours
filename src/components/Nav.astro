@@ -1,64 +1,159 @@
 ---
-// Navbar.astro
-// Identidad Vita Tours: 60% Blanco, 15% Turquesa, 10% Azul Cielo
+import { getCollection, type CollectionEntry } from 'astro:content';
+
+const allTours = await getCollection('tours');
+
+interface ToursByTag {
+  [key: string]: CollectionEntry<'tours'>[];
+}
+
+const toursByTag = allTours.reduce((acc: ToursByTag, tour) => {
+  const tag = tour.data.tag || 'General';
+  if (!acc[tag]) acc[tag] = [];
+  acc[tag].push(tour);
+  return acc;
+}, {});
+
+const tags = Object.keys(toursByTag).slice(0, 8);
 ---
 
-<nav class="fixed top-0 left-0 w-full z-9999 px-4 md:px-2 py-6">
-  <div class="relative max-w-7xl mx-auto h-16 bg-white backdrop-blur-sm rounded-lg flex items-center justify-between px-3 shadow-lg">
-    
-    <div class="flex items-center gap-5 w-1/3">
-      <div class="flex gap-4 text-[#36AAF5]">
-        <a href="#" class="hover:text-[#38F5C4] transition-colors">
-          <svg xmlns="http://www.w3.org/2000/svg" width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><rect x="2" y="2" width="20" height="20" rx="5" ry="5"></rect><path d="M16 11.37A4 4 0 1 1 12.63 8 4 4 0 0 1 16 11.37z"></path><line x1="17.5" y1="6.5" x2="17.51" y2="6.5"></line></svg>
-        </a>
-        <a href="#" class="hover:text-[#38F5C4] transition-colors">
-          <svg xmlns="http://www.w3.org/2000/svg" width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M22 16.92v3a2 2 0 0 1-2.18 2 19.79 19.79 0 0 1-8.63-3.07 19.5 19.5 0 0 1-6-6 19.79 19.79 0 0 1-3.07-8.67A2 2 0 0 1 4.11 2h3a2 2 0 0 1 2 1.72 12.84 12.84 0 0 0 .7 2.81 2 2 0 0 1-.45 2.11L8.09 9.91a16 16 0 0 0 6 6l1.27-1.27a2 2 0 0 1 2.11-.45 12.84 12.84 0 0 0 2.81.7A2 2 0 0 1 22 16.92z"></path></svg>
-        </a>
-        <a href="#" class="hover:text-[#38F5C4] transition-colors">
-          <svg xmlns="http://www.w3.org/2000/svg" width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M9 12a4 4 0 1 0 4 4V4a5 5 0 0 0 5 5"></path></svg>
-        </a>
-      </div>
-      <span class="hidden lg:block text-[#36AAF5] text-[11px] font-bold tracking-widest border-l border-[#36AAF5]/20 pl-4">
-        +57 300 000 0000
-      </span>
+<header id="main-header" class="fixed top-0 left-0 w-full z-[9999] transition-all duration-300">
+  
+  <div class="md:hidden flex h-8 bg-white border-b border-gray-100 items-stretch overflow-hidden">
+    <div class="flex-1 flex items-center px-4">
+      <span class="text-[#36AAF5] text-[10px] font-black tracking-widest uppercase">+57 300 000 0000</span>
     </div>
+    <a href="/contact" class="bg-[#36AAF5] text-white text-[10px] font-black px-6 flex items-center uppercase tracking-widest active:bg-[#38F5C4] transition-colors">
+      Vivir experiencia
+    </a>
+  </div>
 
-    <div class="flex items-center justify-center w-1/3">
-      <div class="hidden md:flex gap-8 mr-20">
-        <a href="/" class="text-[#36AAF5] text-xs font-bold hover:text-[#38F5C4] transition-colors uppercase tracking-[0.2em]">
-          Home
-        </a>
-        <a href="/tours" class="text-[#36AAF5] text-xs font-bold hover:text-[#38F5C4] transition-colors uppercase tracking-[0.2em]">
-          Tours
-        </a>
+  <nav id="navbar-body" class="px-0 md:px-4 py-0 md:py-6 transition-all duration-500">
+    <div class="relative max-w-7xl mx-auto h-16 bg-white md:rounded-lg flex items-center justify-between px-3 shadow-lg border-b md:border border-gray-100">
+      
+      <div class="flex items-center gap-5 w-1/3">
+        <div class="flex gap-4 text-[#36AAF5]">
+          <a href="#" class="hover:text-[#38F5C4] transition-colors">
+            <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><rect x="2" y="2" width="20" height="20" rx="5" ry="5"></rect><path d="M16 11.37A4 4 0 1 1 12.63 8 4 4 0 0 1 16 11.37z"></path><line x1="17.5" y1="6.5" x2="17.51" y2="6.5"></line></svg>
+          </a>
+          <a href="#" class="hover:text-[#38F5C4] transition-colors">
+            <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M22 16.92v3a2 2 0 0 1-2.18 2 19.79 19.79 0 0 1-8.63-3.07 19.5 19.5 0 0 1-6-6 19.79 19.79 0 0 1-3.07-8.67A2 2 0 0 1 4.11 2h3a2 2 0 0 1 2 1.72 12.84 12.84 0 0 0 .7 2.81 2 2 0 0 1-.45 2.11L8.09 9.91a16 16 0 0 0 6 6l1.27-1.27a2 2 0 0 1 2.11-.45 12.84 12.84 0 0 0 2.81.7A2 2 0 0 1 22 16.92z"></path></svg>
+          </a>
+          <a href="#" class="hover:text-[#38F5C4] transition-colors">
+            <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M9 12a4 4 0 1 0 4 4V4a5 5 0 0 0 5 5"></path></svg>
+          </a>
+        </div>
+        <span class="hidden lg:block text-[#36AAF5] text-[11px] font-bold tracking-widest border-l border-[#36AAF5]/20 pl-4 whitespace-nowrap">+57 300 000 0000</span>
       </div>
 
-      <div class="absolute left-1/2 -translate-x-1/2 top-1/2 -translate-y-1/2">
-        <div class="relative group">
-          <a href="/" class="w-24 h-24 bg-white border border-[#36AAF5] rounded-full flex items-center justify-center shadow-lg transition-transform group-hover:scale-105">
-            <img src="/img/logo-vitatours.png" 
-              alt="Vita Tours" 
-              class="w-22 h-auto"
-            />
+      <div class="flex items-center justify-center w-1/3">
+        <div class="hidden md:flex flex-1 justify-end items-center mr-16 lg:mr-24">
+          <a href="/" class="text-[#36AAF5] text-xs font-bold hover:text-[#38F5C4] transition-colors uppercase tracking-[0.2em]">Home</a>
+          
+          <div class="group/mega py-6 ml-8">
+            <a href="/tours" class="text-[#36AAF5] text-xs font-bold hover:text-[#38F5C4] transition-colors uppercase tracking-[0.2em] flex items-center gap-1">
+              Tours <span class="text-[8px] opacity-40 transition-transform group-hover/mega:rotate-180">▼</span>
+            </a>
+            
+            <div class="absolute top-full left-1/2 -translate-x-1/2 w-max max-w-[90vw] bg-white shadow-2xl border border-gray-100 p-8 opacity-0 invisible group-hover/mega:opacity-100 group-hover/mega:visible transition-all duration-300 translate-y-2 group-hover/mega:translate-y-0 rounded-xl">
+              <div class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-10">
+                {tags.map(tag => (
+                  <div class="min-w-45">
+                    <h4 class="text-xs font-black text-[#38F5C4] uppercase tracking-[.15em] border-b border-gray-50 pb-2 mb-4">{tag}</h4>
+                    <div class="space-y-3">
+                      {toursByTag[tag].slice(0, 3).map(tour => (
+                        <a href={`/tours/${tour.slug}`} class="group/item block">
+                          <p class="text-xs font-bold text-gray-900 group-hover/item:text-[#36AAF5] transition-colors uppercase italic leading-none truncate">{tour.data.nombre}</p>
+                          <p class="text-[10px] text-gray-400 uppercase tracking-widest truncate">{tour.data.lugarDestino}</p>
+                        </a>
+                      ))}
+                    </div>
+                    <a href={`/tours?filter=${tag}`} class="mt-4 inline-block text-xs tracking-[.15em] font-black text-[#36AAF5] hover:text-[#38F5C4]">Explorar más ➔</a>
+                  </div>
+                ))}
+              </div>
+            </div>
+          </div>
+        </div>
+
+        <div class="relative z-50 shrink-0">
+          <a href="/" class="w-20 h-20 md:w-24 md:h-24 bg-white border border-[#36AAF5] rounded-full flex items-center justify-center shadow-lg transition-transform hover:scale-105">
+            <img src="/img/logo-vitatours.png" alt="Vita Tours" class="w-16 md:w-22 h-auto" />
           </a>
+        </div>
+
+        <div class="hidden md:flex flex-1 justify-start items-center ml-16 lg:ml-24">
+          <a href="/nosotros" class="text-[#36AAF5] text-xs font-bold hover:text-[#38F5C4] transition-colors uppercase tracking-[0.2em] mr-8">Nosotros</a>
+          <a href="/contact" class="text-[#36AAF5] text-xs font-bold hover:text-[#38F5C4] transition-colors uppercase tracking-[0.2em]">Contact</a>
         </div>
       </div>
 
-      <div class="hidden md:flex gap-8 ml-32">
-        <a href="/contact" class="text-[#36AAF5] text-xs font-bold hover:text-[#38F5C4] transition-colors uppercase tracking-[0.2em]">
-          Contact
-        </a>
-        <a href="/contact" class="text-[#36AAF5] text-xs font-bold hover:text-[#38F5C4] transition-colors uppercase tracking-[0.2em]">
-          Contact
-        </a>
+      <div class="flex justify-end w-1/3">
+        <button class="hidden md:block bg-[#36AAF5] hover:bg-[#38F5C4] text-white text-xs font-black px-6 py-2.5 rounded-lg transition-all uppercase tracking-widest active:scale-95 whitespace-nowrap">Vivir experiencia</button>
+        <button id="mobile-trigger" class="md:hidden text-[#36AAF5] p-2">
+            <svg width="28" height="28" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5"><line x1="3" y1="12" x2="21" y2="12"></line><line x1="3" y1="6" x2="21" y2="6"></line><line x1="3" y1="18" x2="21" y2="18"></line></svg>
+        </button>
       </div>
     </div>
+  </nav>
 
-    <div class="flex justify-end w-1/3">
-      <button class="bg-[#36AAF5] hover:bg-[#38F5C4] text-white text-[10px] md:text-xs font-black px-6 py-2.5 rounded-lg transition-all uppercase tracking-widest active:scale-95">
-        Vivir experiencia
-      </button>
+  <div id="mobile-menu" class="fixed inset-0 bg-white translate-x-full transition-transform duration-500 z-[10001] flex flex-col overflow-hidden">
+    <div class="p-6 border-b flex justify-between items-center bg-white z-10">
+        <span class="text-[10px] font-black uppercase tracking-widest text-[#36AAF5]">Menu Explorador</span>
+        <button id="mobile-close" class="text-3xl text-[#36AAF5]">&times;</button>
+    </div>
+    
+    <div class="flex-1 overflow-y-auto p-6 space-y-6">
+      <a href="/" class="block text-4xl font-black uppercase italic italic-sh tracking-tighter text-[#36AAF5]">Home</a>
+      
+      <div class="space-y-4">
+        <button id="accordion-trigger" class="w-full text-left text-4xl font-black uppercase italic tracking-tighter text-[#36AAF5] flex justify-between items-center">
+          Tours <span class="text-xl transition-transform duration-300" id="acc-icon">+</span>
+        </button>
+        <div id="accordion-content" class="hidden flex flex-col gap-6 pl-2 border-l-2 border-[#38F5C4]/30">
+          {tags.map(tag => (
+            <div class="space-y-2">
+              <h5 class="text-[10px] font-black text-[#38F5C4] uppercase tracking-[0.2em]">{tag}</h5>
+              <div class="grid gap-3">
+                {toursByTag[tag].slice(0, 3).map(tour => (
+                  <a href={`/tours/${tour.slug}`} class="block py-1">
+                    <p class="text-sm font-bold text-gray-800 uppercase italic leading-tight">{tour.data.nombre}</p>
+                    <p class="text-[9px] text-gray-400 uppercase">{tour.data.lugarDestino}</p>
+                  </a>
+                ))}
+              </div>
+            </div>
+          ))}
+        </div>
+      </div>
+      
+      <a href="/nosotros" class="block text-4xl font-black uppercase italic tracking-tighter text-[#36AAF5]">Nosotros</a>
+      <a href="/contact" class="block text-4xl font-black uppercase italic tracking-tighter text-[#36AAF5]">Contact</a>
     </div>
   </div>
-  
-</nav>
+</header>
+
+<script>
+  const trigger = document.getElementById('mobile-trigger');
+  const close = document.getElementById('mobile-close');
+  const menu = document.getElementById('mobile-menu');
+  const accTrigger = document.getElementById('accordion-trigger');
+  const accContent = document.getElementById('accordion-content');
+  const accIcon = document.getElementById('acc-icon');
+
+  trigger?.addEventListener('click', () => menu?.classList.remove('translate-x-full'));
+  close?.addEventListener('click', () => menu?.classList.add('translate-x-full'));
+
+  accTrigger?.addEventListener('click', () => {
+    const isHidden = accContent?.classList.toggle('hidden');
+    if (accIcon) accIcon.innerText = isHidden ? '+' : '-';
+    if (accIcon) accIcon.style.transform = isHidden ? 'rotate(0deg)' : 'rotate(180deg)';
+  });
+</script>
+
+<style>
+  .flex-1 { flex: 1 1 0%; }
+  .w-max { width: max-content; }
+  .group\/mega:hover > div { opacity: 1; visibility: visible; }
+  .italic-sh { text-shadow: 2px 2px 0px rgba(54, 170, 245, 0.1); }
+</style>
