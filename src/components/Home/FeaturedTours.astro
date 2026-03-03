@@ -1,0 +1,181 @@
+---
+import { getCollection } from 'astro:content';
+const tours = await getCollection('tours');
+---
+
+<section class="bg-white py-24 overflow-hidden relative z-99 -mt-10 rounded-t-[40px]">
+  <div class="max-w-7xl mx-auto">
+    
+    <div class="flex flex-col md:flex-row justify-between items-center mb-15 gap-8">
+      <div>
+        <span class="text-[#38F5C4] font-bold text-[10px] uppercase tracking-[0.4em] block mb-2 text-center md:text-left">Explora el catálogo</span>
+        <h2 class="text-3xl font-black text-gray-900 uppercase italic leading-none text-center md:text-left">Rutas Activas</h2>
+      </div>
+
+      <div class="flex items-center gap-6 bg-gray-300 p-2 rounded-full shadow-md">
+        <button id="prevBtn" class="group p-4 bg-white rounded-full shadow-sm hover:bg-black transition-all duration-300 cursor-pointer">
+          <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="3" class="group-hover:text-[#38F5C4] text-gray-400 transition-colors"><path d="M15 18l-6-6 6-6"/></svg>
+        </button>
+        
+        <div id="counter-display" class="text-center min-w-25">
+          <span class="text-xs font-black text-gray-900 uppercase tracking-tighter italic">Vista 01 / {tours.length}</span>
+        </div>
+
+        <button id="nextBtn" class="group p-4 bg-white rounded-full shadow-sm hover:bg-black transition-all duration-300 cursor-pointer">
+          <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="3" class="group-hover:text-[#38F5C4] text-gray-400 transition-colors"><path d="M9 5l6 6-6 6"/></svg>
+        </button>
+      </div>
+    </div>
+
+    <div class="relative min-h-80 flex items-center justify-center">
+      <div id="stack-container" class="relative w-full max-w-250 h-80 cursor-grab active:cursor-grabbing">
+        {tours.map((tour, index) => (
+          <div 
+            class="tour-card absolute top-0 w-full max-w-112.5 h-full transition-all duration-700 ease-[cubic-bezier(0.25,1,0.5,1)] "
+            data-index={index}
+          >
+            <a href={`/tours/${tour.slug}`} class="block h-75 w-full pointer-events-none md:pointer-events-auto ">
+              <div class="relative h-full w-full rounded-xl overflow-hidden shadow-xl border border-gray-100 bg-black">
+                <img 
+                  src={tour.data.imagen} 
+                  class="absolute inset-0 w-full h-full object-cover opacity-80" 
+                  alt={tour.data.nombre}
+                  draggable="false"
+                />
+                <div class="absolute inset-0 bg-linear-to-t from-black via-black/10 to-transparent"></div>
+                
+                <div class="absolute bottom-0 left-0 p-8 w-full">
+                  <span class="bg-[#38F5C4] text-black text-[8px] font-black uppercase tracking-widest px-2 py-1 rounded-sm mb-4 inline-block">
+                    {tour.data.tag}
+                  </span>
+                  <h3 class="text-white text-xl md:text-2xl font-black uppercase italic leading-tight mb-2 tracking-tighter">
+                    {tour.data.nombre}
+                  </h3>
+                  <p class="text-white/40 text-[10px] font-bold uppercase tracking-widest">{tour.data.duracion} • {tour.data.lugarDestino}</p>
+                </div>
+              </div>
+            </a>
+          </div>
+        ))}
+      </div>
+    </div>
+  </div>
+</section>
+
+<script>
+  const container = document.getElementById('stack-container');
+  const cards = document.querySelectorAll('.tour-card');
+  const counterDisplay = document.querySelector('#counter-display span');
+  const nextBtn = document.getElementById('nextBtn');
+  const prevBtn = document.getElementById('prevBtn');
+  
+  let currentIndex = 0;
+  let startX = 0;
+  let isDragging = false;
+
+  function updateStack() {
+    cards.forEach((card, i) => {
+      const htmlCard = card as HTMLElement;
+      
+      // Lógica de "Foco Dual"
+      // Si i es igual al currentIndex o al currentIndex + 1, están enfocados.
+      const isFocused = (i === currentIndex || i === currentIndex + 1);
+      
+      if (isFocused) {
+        // POSICIONES ENFOCADAS (CENTRALES)
+        const sideOffset = (i === currentIndex) ? -240 : 240; // Se separan del centro
+        htmlCard.style.transform = `translateX(${sideOffset}px) scale(1) translateZ(0) rotateY(0)`;
+        htmlCard.style.opacity = '1';
+        htmlCard.style.zIndex = '30';
+        htmlCard.style.filter = 'blur(0px)';
+      } else {
+        // POSICIONES DE FONDO (ATRAS)
+        const distance = i - currentIndex;
+        const side = distance > 0 ? 1 : -1;
+        const absDistance = Math.abs(distance);
+        
+        // Calculamos el desfase basándonos en si están a la izquierda del primer foco o derecha del segundo
+        const xBase = side > 0 ? 380 : -380;
+        const xOffset = xBase + (side * (absDistance * 80));
+        const zOffset = absDistance * -200;
+        const scale = 0.8 - (absDistance * 0.05);
+        const rotate = side * -20;
+
+        htmlCard.style.transform = `translateX(${xOffset}px) translateZ(${zOffset}px) scale(${scale}) rotateY(${rotate}deg)`;
+        htmlCard.style.opacity = '0.3';
+        htmlCard.style.zIndex = '10';
+        htmlCard.style.filter = 'blur(4px)';
+      }
+    });
+
+    if (counterDisplay) {
+        counterDisplay.textContent = `Vista ${(currentIndex + 1).toString().padStart(2, '0')} / ${cards.length.toString().padStart(2, '0')}`;
+    }
+  }
+
+  const goNext = () => {
+    // Permitimos avanzar hasta el penúltimo para que siempre haya dos al frente
+    if (currentIndex < cards.length - 2) {
+      currentIndex++;
+      updateStack();
+    } else {
+      currentIndex = 0; // Loop opcional
+      updateStack();
+    }
+  };
+
+  const goPrev = () => {
+    if (currentIndex > 0) {
+      currentIndex--;
+      updateStack();
+    }
+  };
+
+  nextBtn?.addEventListener('click', goNext);
+  prevBtn?.addEventListener('click', goPrev);
+
+  // Arrastre
+  const handleStart = (x: number) => { startX = x; isDragging = true; };
+  const handleMove = (x: number) => {
+    if (!isDragging) return;
+    const diff = startX - x;
+    if (Math.abs(diff) > 80) {
+      if (diff > 0) goNext(); else goPrev();
+      isDragging = false;
+    }
+  };
+
+  container?.addEventListener('mousedown', (e) => handleStart(e.pageX));
+  window.addEventListener('mousemove', (e) => handleMove(e.pageX));
+  window.addEventListener('mouseup', () => isDragging = false);
+  container?.addEventListener('touchstart', (e) => handleStart(e.touches[0].pageX));
+  container?.addEventListener('touchmove', (e) => handleMove(e.touches[0].pageX));
+  window.addEventListener('touchend', () => isDragging = false);
+
+  updateStack();
+</script>
+
+<style>
+  #stack-container {
+    perspective: 1500px;
+    transform-style: preserve-3d;
+  }
+  .tour-card {
+    will-change: transform, opacity;
+    left: 50%;
+    margin-left: -225px; /* Mitad de max-w-450px */
+  }
+  
+  /* Ajuste para móvil (en móvil es mejor ver solo uno enfocado) */
+  @media (max-width: 768px) {
+    .tour-card {
+        margin-left: 0;
+        left: 0;
+        max-width: 100%;
+    }
+    /* En móvil forzamos que el offset sea 0 para que no se salgan de pantalla */
+    .tour-card[style*="translateX"] {
+        transform: translateX(0) !important;
+    }
+  }
+</style>

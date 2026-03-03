@@ -21,10 +21,10 @@ export default function ScrollVideoStory() {
   const imagesRef = useRef([]); 
 
   const steps = [
-    { title: "Caminar hacia afuera...", body: "Para encontrarte por dentro. Una pausa necesaria en las montañas de Medellín.", tag: "Bienvenido a Vita Tours", img: "/img/home/img1.jpg" },
-    { title: "La naturaleza regula tu sistema nervioso", body: "Cambiamos el ruido de la ciudad por el susurro del río y la calma del bosque.", tag: "Conexión Real", img: "/img/home/img2.jpg" },
-    { title: "Psicología aplicada a la vida real", body: "Conversaciones guiadas sobre ansiedad, estrés y propósito mientras el cuerpo se mueve.", tag: "Espacio Seguro", img: "/img/home/img3.jpg" },
-    { title: "No es solo un tour, es una transformación", body: "Sal del estancamiento mental. El movimiento libera lo que las palabras a veces no pueden.", tag: "Bienestar en Movimiento", img: "/img/home/img3.jpg" },
+    { title: "Caminar hacia afuera...", body: "Para encontrarte por dentro. Una pausa necesaria en las montañas de Medellín.", tag: "Bienvenido a Vita Tours", img: "/img/home/card-caminar-hacia-afuera.webp" },
+    { title: "La naturaleza regula tu sistema nervioso", body: "Cambiamos el ruido de la ciudad por el susurro del río y la calma del bosque.", tag: "Conexión Real", img: "/img/home/card-regula-tu-sistema-nervioso.webp" },
+    { title: "Psicología aplicada a la vida real", body: "Conversaciones guiadas sobre ansiedad, estrés y propósito mientras el cuerpo se mueve.", tag: "Espacio Seguro", img: "/img/home/card-psicologia-aplicada.webp" },
+    { title: "No es solo un tour, es una transformación", body: "Sal del estancamiento mental. El movimiento libera lo que las palabras a veces no pueden.", tag: "Bienestar en Movimiento", img: "/img/home/card-transformacion.webp" },
   ];
 
   // --- Script de Optimización de Carga ---
