@@ -1,0 +1,104 @@
+---
+// Blogs.astro
+const posts = [
+  {
+    category: "Neurociencia",
+    title: "Por qué el cerebro necesita verde",
+    excerpt: "Descubre cómo la dopamina se regula al observar fractales naturales.",
+    date: "12 Mar 2024",
+    image: "https://images.unsplash.com/photo-1511497584788-876760111969?auto=format&fit=crop&q=80&w=800",
+    slug: "/blog/cerebro-verde"
+  },
+  {
+    category: "Movimiento",
+    title: "El paso que rompe el bucle",
+    excerpt: "La ciencia detrás de caminar y la resolución de problemas complejos.",
+    date: "08 Mar 2024",
+    image: "https://images.unsplash.com/photo-1551632432-c735e82992a8?auto=format&fit=crop&q=80&w=800",
+    slug: "/blog/movimiento-bucle"
+  },
+  {
+    category: "Mindfulness",
+    title: "Silencio vs. Ruido Urbano",
+    excerpt: "Cómo el cortisol baja drásticamente al cambiar el asfalto por tierra.",
+    date: "01 Mar 2024",
+    image: "https://images.unsplash.com/photo-1518005020251-58296b8a879d?auto=format&fit=crop&q=80&w=800",
+    slug: "/blog/silencio-urbano"
+  }
+];
+---
+
+<section class="py-24 bg-gray-50 overflow-hidden" id="blog-section">
+  <div class="max-w-7xl mx-auto px-6">
+    
+    <div class="flex flex-col md:flex-row md:items-end justify-between mb-16 gap-6">
+      <div class="max-w-2xl">
+        <span class="text-[#36AAF5] font-black uppercase tracking-[0.4em] text-[10px] block mb-4">Recursos Mentalmente Activos</span>
+        <h2 class="text-5xl md:text-7xl font-black uppercase italic text-gray-900 leading-[0.85] tracking-tighter">
+          CIENCIA <br/> <span class="text-[#38F5C4]">& AVENTURA.</span>
+        </h2>
+      </div>
+      <a href="/blog" class="group flex items-center gap-2 text-xs font-black uppercase tracking-widest italic border-b-2 border-[#38F5C4] pb-1 hover:text-[#36AAF5] transition-colors">
+        Ver todos los artículos
+        <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="3" class="group-hover:translate-x-1 transition-transform"><path d="M5 12h14M12 5l7 7-7 7"/></svg>
+      </a>
+    </div>
+
+    <div class="grid grid-cols-1 md:grid-cols-3 gap-8">
+      {posts.map((post) => (
+        <article class="blog-card group cursor-pointer relative bg-white rounded-3xl overflow-hidden shadow-sm hover:shadow-2xl transition-all duration-500">
+          <div class="aspect-3/2 overflow-hidden relative">
+            <img 
+              src={post.image} 
+              alt={post.title} 
+              class="w-full h-full object-cover group-hover:scale-110 transition-transform duration-700"
+            />
+            <div class="absolute top-4 left-4 bg-white/90 backdrop-blur-md px-3 py-1 rounded-full shadow-sm">
+              <span class="text-[9px] font-black uppercase tracking-widest text-gray-900">{post.category}</span>
+            </div>
+          </div>
+
+          <div class="p-8">
+            <time class="text-[10px] font-bold text-gray-400 uppercase tracking-widest mb-3 block">{post.date}</time>
+            <h3 class="text-2xl font-black uppercase italic text-gray-900 leading-none mb-4 group-hover:text-[#36AAF5] transition-colors">
+              {post.title}
+            </h3>
+            <p class="text-gray-500 text-sm font-medium leading-relaxed mb-6">
+              {post.excerpt}
+            </p>
+            
+            <div class="flex items-center gap-2 text-[10px] font-black uppercase italic tracking-widest group-hover:gap-4 transition-all">
+              Leer más <span class="text-[#38F5C4]">→</span>
+            </div>
+          </div>
+        </article>
+      ))}
+    </div>
+  </div>
+</section>
+
+<script>
+  import { gsap } from "gsap";
+  import { ScrollTrigger } from "gsap/ScrollTrigger";
+  gsap.registerPlugin(ScrollTrigger);
+
+  // Animación escalonada (Stagger) para las tarjetas
+  gsap.from(".blog-card", {
+    scrollTrigger: {
+      trigger: "#blog-section",
+      start: "top 70%",
+    },
+    y: 60,
+    opacity: 0,
+    duration: 1,
+    stagger: 0.2,
+    ease: "power4.out"
+  });
+</script>
+
+<style>
+  .blog-card {
+    /* Efecto de borde sutil al flotar */
+    outline: 1px solid rgba(0,0,0,0.05);
+  }
+</style>

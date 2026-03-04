@@ -18,4 +18,16 @@ const tours = defineCollection({
   }),
 });
 
-export const collections = { tours };
+const blogs = defineCollection({
+  type: 'content',
+  schema: z.object({
+    title: z.string(),
+    category: z.string(),
+    excerpt: z.string(),
+    date: z.date(),
+    image: z.string(),
+    author: z.string().default("Psicología Activa"),
+  }),
+});
+
+export const collections = { tours, blogs };
