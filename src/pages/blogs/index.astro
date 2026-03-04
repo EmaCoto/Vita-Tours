@@ -1,89 +1,98 @@
 ---
-// src/pages/blog/index.astro
+// src/pages/blogs/index.astro
 import Layout from '../../layouts/Layout.astro';
 import { getCollection } from 'astro:content';
 
-const posts = await getCollection('blogs');
+const posts = await getCollection('blogs'); 
 const sortedPosts = posts.sort((a, b) => b.data.date.valueOf() - a.data.date.valueOf());
 
-// El primer post será el "Destacado" (Hero del blog)
 const featuredPost = sortedPosts[0];
 const remainingPosts = sortedPosts.slice(1);
 ---
 
 <Layout title="Bitácora | Psicología Activa">
-  <main class="bg-white overflow-hidden">
+  <main class="bg-gray-100">
     
-    <section class="relative pt-32 pb-20 px-6 border-b border-gray-100 bg-gray-50/50">
-      <div class="max-w-7xl mx-auto relative z-10">
-        <div class="reveal-header">
-          <span class="text-[#36AAF5] font-black uppercase tracking-[0.4em] text-[10px] block mb-6 italic">Recursos Mentalmente Activos</span>
-          <h1 class="text-6xl md:text-9xl font-black uppercase italic text-gray-900 leading-[0.8] tracking-tighter mb-12">
-            CIENCIA <br/> <span class="text-[#38F5C4]">& AVENTURA.</span>
+    <section class="relative pt-32 pb-20 px-6">
+      <div class="max-w-7xl mx-auto flex flex-col md:flex-row md:items-end justify-between gap-10 relative z-10">
+        <div class="reveal-header max-w-2xl">
+          <span class="text-[#36AAF5] font-black uppercase tracking-[0.4em] text-[10px] block mb-6 italic">Exploración Humana</span>
+          <h1 class="text-4xl md:text-6xl font-black uppercase italic text-gray-900 leading-[0.85] tracking-tighter">
+            CIENCIA <br/> <span class="text-[#38F5C4]">& AVENTURA</span>
           </h1>
         </div>
+        
+        <div class="reveal-header-right text-right hidden md:block">
+          <p class="text-[10px] font-black uppercase tracking-[0.2em] text-gray-400 mb-2">Artículos Publicados</p>
+          <div class="text-5xl font-black italic text-gray-900 tracking-tighter">
+            {posts.length < 10 ? `0${posts.length}` : posts.length}
+          </div>
+          <div class="w-24 h-1 bg-[#38F5C4] ml-auto mt-4"></div>
+        </div>
       </div>
-      <div class="absolute top-20 right-[-5%] w-96 h-96 bg-[#38F5C4]/10 rounded-full blur-[120px] deco-circle"></div>
     </section>
 
     {featuredPost && (
-      <section class="py-20 px-6 max-w-7xl mx-auto">
-        <a href={`/blogs/${featuredPost.slug}`} class="group relative flex flex-col lg:flex-row items-center gap-12 featured-card">
-          <div class="w-full lg:w-3/5 aspect-3/2 overflow-hidden rounded-[3rem] shadow-2xl relative">
-            <img 
-              src={featuredPost.data.image} 
-              alt={featuredPost.data.title}
-              class="w-full h-full object-cover transition-transform duration-1000 group-hover:scale-105"
-            />
-            <div class="absolute inset-0 bg-black/10 group-hover:bg-transparent transition-colors"></div>
-          </div>
-          <div class="w-full lg:w-2/5">
-            <span class="bg-black text-white px-3 py-1 text-[9px] font-black uppercase tracking-widest mb-6 inline-block italic">Lectura Destacada</span>
-            <h2 class="text-4xl md:text-5xl font-black uppercase italic text-gray-900 leading-none mb-6 group-hover:text-[#36AAF5] transition-colors tracking-tighter">
-              {featuredPost.data.title}
-            </h2>
-            <p class="text-gray-500 text-lg font-medium leading-relaxed mb-8 line-clamp-3">
-              {featuredPost.data.excerpt}
-            </p>
-            <div class="flex items-center gap-4 text-xs font-black uppercase italic tracking-widest">
-              Explorar artículo <span class="text-[#38F5C4] group-hover:translate-x-3 transition-transform duration-300">→</span>
+      <section class="py-5 px-6 max-w-7xl mx-auto">
+        <div class="featured-card group relative rounded-lg p-6 lg:p-10 transition-all duration-500 hover:bg-white hover:shadow-2xl border border-gray-100">
+          <a href={`/blogs/${featuredPost.slug}`} class="absolute inset-0 z-30" aria-label={featuredPost.data.title}></a>
+          
+          <div class="flex flex-col lg:flex-row items-center gap-12 relative z-10">
+            <div class="w-full lg:w-3/5 aspect-video overflow-hidden rounded-lg shadow-xl">
+              <img 
+                src={featuredPost.data.image} 
+                alt={featuredPost.data.title}
+                class="w-full h-full object-cover transition-transform duration-1000 group-hover:scale-105"
+              />
+            </div>
+            <div class="w-full lg:w-2/5">
+              <span class="bg-black text-white px-3 py-1 text-[9px] font-black uppercase tracking-widest mb-6 inline-block italic">Destacado</span>
+              <h2 class="text-4xl md:text-5xl font-black uppercase italic text-gray-900 leading-[0.9] mb-6 group-hover:text-[#36AAF5] transition-colors tracking-tighter">
+                {featuredPost.data.title}
+              </h2>
+              <p class="text-gray-500 text-lg font-medium leading-relaxed mb-8">
+                {featuredPost.data.excerpt}
+              </p>
+              <div class="flex items-center gap-3 text-xs font-black uppercase italic tracking-widest text-gray-900">
+                Leer artículo <span class="text-[#38F5C4] group-hover:translate-x-3 transition-transform font-bold text-xl">→</span>
+              </div>
             </div>
           </div>
-        </a>
+        </div>
       </section>
     )}
 
-    <section class="py-24 px-6 bg-white" id="grid-section">
+    <section class="py-5 px-6" id="grid-section">
       <div class="max-w-7xl mx-auto">
-        <div class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-x-8 gap-y-16">
+        <div class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-10">
           {remainingPosts.map((post) => (
-            <article class="blog-card group flex flex-col">
-              <a href={`/blogs/${post.slug}`} class="block overflow-hidden rounded-[2.5rem] mb-8 relative aspect-3/2 shadow-lg">
+            <article class="blogs-card group relative flex flex-col p-4 rounded-lg transition-all duration-500 bg-white border border-gray-100 hover:bg-white hover:border-[#38F5C4]/30 hover:shadow-xl">
+              <a href={`/blogs/${post.slug}`} class="absolute inset-0 z-30" aria-label={post.data.title}></a>
+
+              <div class="overflow-hidden rounded-lg mb-8 relative aspect-16/11 shadow-sm">
                 <img 
                   src={post.data.image} 
                   alt={post.data.title}
                   class="w-full h-full object-cover transition-transform duration-700 group-hover:scale-110"
                 />
-                <div class="absolute top-5 left-5">
-                   <span class="bg-white/90 backdrop-blur-md px-4 py-1.5 rounded-full text-[9px] font-black uppercase tracking-widest text-gray-900 italic shadow-sm">
+                <div class="absolute top-5 left-5 z-10">
+                   <span class="bg-white px-4 py-1.5 rounded-full text-[9px] font-black uppercase tracking-widest text-gray-900 italic shadow-sm border border-gray-100">
                     {post.data.category}
                    </span>
                 </div>
-              </a>
+              </div>
               
-              <div class="px-2">
-                <time class="text-[10px] font-bold text-gray-400 uppercase tracking-widest mb-4 block">
+              <div class="px-2 pb-4">
+                <time class="text-[10px] font-bold text-gray-400 uppercase tracking-widest mb-4 block italic">
                   {post.data.date.toLocaleDateString('es-ES', { day: '2-digit', month: 'short', year: 'numeric' })}
                 </time>
                 <h3 class="text-2xl font-black uppercase italic text-gray-900 leading-[1.1] mb-4 tracking-tighter group-hover:text-[#36AAF5] transition-colors">
                   {post.data.title}
                 </h3>
-                <p class="text-gray-500 text-sm font-medium leading-relaxed mb-6 line-clamp-2">
+                <p class="text-gray-500 text-sm font-medium leading-relaxed line-clamp-2">
                   {post.data.excerpt}
                 </p>
-                <div class="h-0.5 w-full bg-gray-100 relative overflow-hidden">
-                   <div class="absolute inset-0 bg-[#38F5C4] -translate-x-full group-hover:translate-x-0 transition-transform duration-500"></div>
-                </div>
+                <div class="mt-8 h-0.5 w-12 bg-gray-100 group-hover:w-full group-hover:bg-[#38F5C4] transition-all duration-500"></div>
               </div>
             </article>
           ))}
@@ -91,16 +100,6 @@ const remainingPosts = sortedPosts.slice(1);
       </div>
     </section>
 
-    <section class="py-24 px-6 text-center">
-      <div class="max-w-2xl mx-auto py-20 rounded-[4rem] bg-gray-950 text-white relative overflow-hidden">
-         <div class="relative z-10">
-           <h2 class="text-3xl md:text-5xl font-black uppercase italic mb-8 tracking-tighter">¿Buscas algo <br/><span class="text-[#38F5C4]">específico?</span></h2>
-           <p class="text-white/50 text-sm mb-10 max-w-sm mx-auto uppercase tracking-widest font-bold italic">Nuestros guías y psicólogos escriben cada semana.</p>
-           <a href="/contact" class="inline-block bg-[#36AAF5] px-10 py-5 rounded-full font-black uppercase italic tracking-widest text-xs hover:bg-[#38F5C4] hover:text-black transition-all">Contáctanos</a>
-         </div>
-         <div class="absolute top-[-20%] left-[-10%] w-64 h-64 bg-[#36AAF5] rounded-full blur-[100px] opacity-20"></div>
-      </div>
-    </section>
   </main>
 </Layout>
 
@@ -110,45 +109,20 @@ const remainingPosts = sortedPosts.slice(1);
   gsap.registerPlugin(ScrollTrigger);
 
   // Animación del Header
-  gsap.from(".reveal-header h1", {
-    y: 100,
-    opacity: 0,
-    duration: 1.2,
-    ease: "power4.out"
-  });
+  gsap.from(".reveal-header", { x: -30, opacity: 0, duration: 0.8 });
+  gsap.from(".reveal-header-right", { x: 30, opacity: 0, duration: 0.8 });
 
-  gsap.to(".deco-circle", {
-    y: 100,
-    x: -50,
-    scrollTrigger: {
-      trigger: "header",
-      start: "top top",
-      end: "bottom top",
-      scrub: 2
-    }
-  });
-
-  // Animación para el post destacado
-  gsap.from(".featured-card", {
-    scrollTrigger: {
-      trigger: ".featured-card",
-      start: "top 80%",
-    },
-    y: 50,
-    opacity: 0,
-    duration: 1
-  });
-
-  // Animación escalonada del grid
-  gsap.from(".blog-card", {
+  // Animación del grid (Aseguramos que la opacidad final sea 1)
+  gsap.from(".blogs-card", {
     scrollTrigger: {
       trigger: "#grid-section",
-      start: "top 75%",
+      start: "top 85%",
     },
-    y: 60,
+    y: 30,
     opacity: 0,
-    duration: 0.8,
-    stagger: 0.15,
+    duration: 0.6,
+    stagger: 0.1,
+    clearProps: "opacity", // ESTO ELIMINA EL ATRIBUTO OPACITY AL TERMINAR LA ANIMACIÓN
     ease: "power2.out"
   });
 </script>
