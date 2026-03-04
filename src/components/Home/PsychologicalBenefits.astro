@@ -1,0 +1,98 @@
+---
+const beneficios = [
+  {
+    titulo: "Regulación del Cortisol",
+    descripcion: "La exposición a entornos verdes reduce el estrés en menos de 20 minutos.",
+    icon: "🧠",
+  },
+  {
+    titulo: "Atención Plena Activa",
+    descripcion: "Caminar entrena tu cerebro para salir del bucle de la ansiedad.",
+    icon: "🌿",
+  }
+];
+---
+
+<section class="py-10 md:py-22 bg-white overflow-hidden" id="beneficios-section">
+  <div class="max-w-7xl mx-auto px-6">
+    <div class="flex flex-col lg:flex-row gap-16 items-center">
+      
+      <div class="w-full lg:w-1/2 space-y-12">
+        <div class="reveal-text">
+          <span class="text-[#36AAF5] font-black uppercase tracking-[0.4em] text-[10px] block mb-4">Bienestar en Movimiento</span>
+          <h2 class="text-4xl md:text-7xl font-black uppercase italic text-gray-900 leading-[0.85] tracking-tighter mb-8">
+            EL MOVIMIENTO <br/> <span class="text-[#38F5C4]">LIBERA LA MENTE.</span>
+          </h2>
+          <p class="text-gray-500 text-lg font-medium leading-relaxed max-w-md">
+            No es solo un tour. Es psicología aplicada para regular tu sistema nervioso mientras reconectas con la tierra.
+          </p>
+        </div>
+
+        <div class="grid grid-cols-1 md:grid-cols-2 gap-6">
+          {beneficios.map((b) => (
+            <div class="benefit-card p-8 rounded-2xl border border-gray-100 bg-white shadow-sm">
+              <div class="text-2xl mb-4">{b.icon}</div>
+              <h3 class="text-lg font-black uppercase italic text-gray-900 mb-2">{b.titulo}</h3>
+              <p class="text-gray-500 text-xs leading-relaxed font-medium">{b.descripcion}</p>
+            </div>
+          ))}
+        </div>
+      </div>
+
+      <div class="w-full lg:w-1/2 relative">
+        <div class="video-container relative rounded-2xl overflow-hidden shadow-lg aspect-2/2 bg-gray-100">
+          <video 
+            autoplay muted loop playsinline 
+            class="w-full h-[125%] object-cover absolute top-0 left-0 video-element"
+          >
+            <source src="/videos-components/hero-home.mp4" type="video/mp4" />
+          </video>
+
+          <div class="absolute inset-0 bg-linear-to-t from-black/50 to-transparent pointer-events-none"></div>
+          
+          <div class="absolute bottom-8 left-8 flex items-center gap-3">
+            <div class="w-10 h-10 rounded-full border border-white/50 flex items-center justify-center backdrop-blur-md">
+              <div class="w-0 h-0 border-t-[5px] border-t-transparent border-l-8 border-l-white border-b-[5px] border-b-transparent ml-0.5"></div>
+            </div>
+            <a href="/contact" class="text-white text-[10px] font-black uppercase tracking-widest italic">Vivir la experiencia</a>
+          </div>
+        </div>
+
+        <div class="absolute -bottom-4 -right-4 bg-[#36AAF5] text-white p-5 rounded-lg rotate-12 shadow-xl hidden md:block sticker">
+            <p class="text-xs font-black uppercase tracking-widest leading-tight text-center">Psicología<br/>Natural</p>
+        </div>
+      </div>
+
+    </div>
+  </div>
+</section>
+
+<script>
+  import { gsap } from "gsap";
+  import { ScrollTrigger } from "gsap/ScrollTrigger";
+  gsap.registerPlugin(ScrollTrigger);
+
+  const tl = gsap.timeline({
+    scrollTrigger: {
+      trigger: "#beneficios-section",
+      start: "top 75%",
+    }
+  });
+
+  tl.from(".reveal-text", { x: -30, opacity: 0, duration: 0.8 })
+    .from(".benefit-card", { y: 20, opacity: 0, stagger: 0.15, duration: 0.6 }, "-=0.4")
+    .from(".video-container", { opacity: 0, scale: 0.95, duration: 1 }, "-=0.6")
+    .from(".sticker", { scale: 0, duration: 0.4, ease: "back.out" }, "-=0.2");
+
+  // Parallax impecable
+  gsap.to(".video-element", {
+    scrollTrigger: {
+      trigger: ".video-container",
+      start: "top bottom",
+      end: "bottom top",
+      scrub: true
+    },
+    yPercent: -18, // Desplazamiento suave dentro del 25% extra de altura
+    ease: "none"
+  });
+</script>

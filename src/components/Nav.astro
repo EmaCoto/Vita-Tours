@@ -17,7 +17,7 @@ const toursByTag = allTours.reduce((acc: ToursByTag, tour) => {
 const tags = Object.keys(toursByTag).slice(0, 8);
 ---
 
-<header id="main-header" class="fixed top-0 left-0 w-full z-[9999] transition-all duration-300">
+<header id="main-header" class="fixed top-0 left-0 w-full z-9999 transition-all duration-300">
   
   <div class="md:hidden flex h-8 bg-white border-b border-gray-100 items-stretch overflow-hidden">
     <div class="flex-1 flex items-center px-4">
@@ -97,7 +97,7 @@ const tags = Object.keys(toursByTag).slice(0, 8);
     </div>
   </nav>
 
-  <div id="mobile-menu" class="fixed inset-0 bg-white translate-x-full transition-transform duration-500 z-[10001] flex flex-col overflow-hidden">
+  <div id="mobile-menu" class="fixed inset-0 bg-white translate-x-full transition-transform duration-500 z-10001 flex flex-col overflow-hidden">
     <div class="p-6 border-b flex justify-between items-center bg-white z-10">
         <span class="text-[10px] font-black uppercase tracking-widest text-[#36AAF5]">Menu Explorador</span>
         <button id="mobile-close" class="text-3xl text-[#36AAF5]">&times;</button>
@@ -110,7 +110,7 @@ const tags = Object.keys(toursByTag).slice(0, 8);
         <button id="accordion-trigger" class="w-full text-left text-4xl font-black uppercase italic tracking-tighter text-[#36AAF5] flex justify-between items-center">
           Tours <span class="text-xl transition-transform duration-300" id="acc-icon">+</span>
         </button>
-        <div id="accordion-content" class="hidden flex flex-col gap-6 pl-2 border-l-2 border-[#38F5C4]/30">
+        <div id="accordion-content" class="flex flex-col gap-6 pl-2 border-l-2 border-[#38F5C4]/30">
           {tags.map(tag => (
             <div class="space-y-2">
               <h5 class="text-[10px] font-black text-[#38F5C4] uppercase tracking-[0.2em]">{tag}</h5>

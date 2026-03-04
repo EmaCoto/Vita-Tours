@@ -1,0 +1,172 @@
+---
+// Galeria3D.astro
+const videos = [
+  { id: 'dQw4w9WgXcQ', title: 'Conexión 1' },
+  { id: '366-00-00', title: 'Conexión 2' },
+  { id: '477-00-00', title: 'Conexión 3' },
+  { id: '588-00-00', title: 'Conexión 4' },
+  { id: '699-00-00', title: 'Conexión 5' },
+];
+---
+
+<section class="py-10 bg-white overflow-hidden" id="gallery-3d-section">
+  <div class="max-w-7xl mx-auto px-6 flex flex-col-reverse lg:flex-row items-center gap-12">
+    
+    <div class="w-full lg:w-2/3 relative h-100 flex items-center justify-center perspective-[2000px]">
+      <div id="carousel-3d" class="relative w-65 h-37.5 md:w-95 md:h-55 transform-style-3d cursor-grab active:cursor-grabbing">
+        {videos.map((video) => (
+          <div 
+            class="video-card absolute inset-0 rounded-lg overflow-hidden border-2 md:border-4 border-white shadow-2xl cursor-pointer"
+            data-video-id={video.id}
+          >
+            <img 
+              src={`https://img.youtube.com/vi/${video.id}/maxresdefault.jpg`} 
+              alt={video.title}
+              class="w-full h-full object-cover select-none pointer-events-none relative z-10"
+            />
+            <div class="absolute inset-0 bg-black/20 z-20 pointer-events-none"></div>
+            <div class="absolute inset-0 flex items-center justify-center z-30 pointer-events-none">
+              <div class="w-12 h-12 md:w-16 md:h-16 bg-[#38F5C4] rounded-full flex items-center justify-center shadow-lg">
+                <svg width="24" height="24" viewBox="0 0 24 24" fill="black" class="ml-1"><path d="M8 5v14l11-7z"/></svg>
+              </div>
+            </div>
+          </div>
+        ))}
+      </div>
+    </div>
+
+    <div class="w-full lg:w-1/3 text-center lg:text-right">
+      <span class="bg-[#38F5C4] text-black px-3 py-1 text-[10px] font-black uppercase italic mb-4 inline-block tracking-widest">
+        Experiencia Inmersiva
+      </span>
+      <h2 class="text-4xl md:text-5xl lg:text-6xl font-black uppercase italic text-gray-900 tracking-tighter leading-[0.9] mb-8">
+        MOMENTOS <br /> 
+        <span class="text-[#38F5C4]">DE CONEXIÓN</span>
+      </h2>
+      
+      <div class="flex items-center justify-center lg:justify-end gap-4">
+        <button id="prev-btn" class="p-4 bg-gray-100 rounded-full hover:bg-[#36AAF5] hover:text-white transition-all active:scale-90">
+          <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="3"><path d="M15 18l-6-6 6-6"/></svg>
+        </button>
+        <button id="next-btn" class="p-4 bg-[#38F5C4] rounded-full hover:scale-110 transition-all text-black active:scale-90">
+          <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="3"><path d="M9 18l6-6-6-6"/></svg>
+        </button>
+      </div>
+    </div>
+  </div>
+
+  <div id="video-modal" class="fixed inset-0 z-9999 bg-black/90 hidden items-center justify-center p-4">
+    <button id="close-modal" class="absolute top-6 right-6 text-white hover:text-[#38F5C4] transition-colors">
+      <svg width="40" height="40" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M18 6L6 18M6 6l12 12"/></svg>
+    </button>
+    <div class="w-full max-w-5xl aspect-video bg-black rounded-2xl overflow-hidden">
+      <iframe id="modal-iframe" class="w-full h-full" src="" frameborder="0" allow="accelerometer; autoplay; clipboard-write; encrypted-media; gyroscope; picture-in-picture" allowfullscreen></iframe>
+    </div>
+  </div>
+</section>
+
+<style>
+  .transform-style-3d { transform-style: preserve-3d; }
+  .video-card { backface-visibility: visible !important; }
+</style>
+
+<script>
+  import { gsap } from "gsap";
+  import { Draggable } from "gsap/dist/Draggable";
+
+  gsap.registerPlugin(Draggable);
+
+  const container = document.getElementById("carousel-3d");
+  const cards = gsap.utils.toArray(".video-card");
+  const modal = document.getElementById("video-modal");
+  const iframe = document.getElementById("modal-iframe") as HTMLIFrameElement;
+  const closeModal = document.getElementById("close-modal");
+  const angleStep = 360 / 5; 
+  let rotationY = 0;
+
+  // --- LÓGICA DE POSICIONAMIENTO ---
+  function positionCards() {
+    const radius = window.innerWidth < 768 ? 180 : 320; 
+    cards.forEach((card: any, i) => {
+      gsap.set(card, {
+        rotationY: i * angleStep,
+        z: radius,
+        transformOrigin: `50% 50% -${radius}px`
+      });
+    });
+  }
+
+  function updateVisuals() {
+    const currentRot = gsap.getProperty(container, "rotationY") as number;
+    cards.forEach((card: any) => {
+      const cardBaseRot = gsap.getProperty(card, "rotationY") as number;
+      let angle = (cardBaseRot + currentRot) % 360;
+      if (angle > 180) angle -= 360;
+      if (angle < -180) angle += 360;
+      const normalized = Math.abs(angle); 
+      
+      gsap.set(card, {
+        zIndex: Math.round(normalized), 
+        y: -(normalized / 180) * 110,
+        filter: normalized < 35 ? "brightness(1.1)" : "brightness(0.5) blur(0.5px)",
+        // Desactivar clics en tarjetas que NO están al frente
+        pointerEvents: normalized < 35 ? "auto" : "none" 
+      });
+    });
+  }
+
+  function rotateTo(val: number) {
+    rotationY = val;
+    gsap.to(container, {
+      rotationY: rotationY,
+      duration: 0.7,
+      ease: "power2.out",
+      onUpdate: updateVisuals
+    });
+  }
+
+  // --- LÓGICA DEL MODAL ---
+  function openVideo(id: string) {
+    iframe.src = `https://www.youtube.com/embed/${id}?autoplay=1`;
+    modal?.classList.remove("hidden");
+    modal?.classList.add("flex");
+    gsap.fromTo(modal, { opacity: 0 }, { opacity: 1, duration: 0.3 });
+  }
+
+  closeModal?.addEventListener("click", () => {
+    modal?.classList.add("hidden");
+    modal?.classList.remove("flex");
+    iframe.src = "";
+  });
+
+  // --- INTERACCIÓN ---
+  positionCards();
+  updateVisuals();
+  window.addEventListener("resize", () => { positionCards(); updateVisuals(); });
+
+  Draggable.create(document.createElement("div"), {
+    trigger: container,
+    type: "x",
+    dragClickables: true, // Permitir clics
+    onDrag: function() {
+      gsap.set(container, { rotationY: `+=${this.deltaX * 1.5}` });
+      updateVisuals();
+    },
+    onDragEnd: function() {
+      const currentRot = gsap.getProperty(container, "rotationY") as number;
+      rotationY = Math.round(currentRot / angleStep) * angleStep;
+      rotateTo(rotationY);
+    },
+    onClick: function(e) {
+      // Detectar cuál card recibió el clic
+      const card = (e.target as HTMLElement).closest(".video-card");
+      if (card) {
+        const videoId = card.getAttribute("data-video-id");
+        if (videoId) openVideo(videoId);
+      }
+    }
+  });
+
+  document.getElementById("prev-btn")?.addEventListener("click", () => { rotationY += angleStep; rotateTo(rotationY); });
+  document.getElementById("next-btn")?.addEventListener("click", () => { rotationY -= angleStep; rotateTo(rotationY); });
+</script>

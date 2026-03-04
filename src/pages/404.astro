@@ -1,0 +1,22 @@
+---
+import Layout from '../layouts/Layout.astro'; // Asegúrate de que apunte a tu layout principal
+
+interface Props {
+    title: string;
+    description?: string; // La hacemos opcional con el "?"
+}
+
+// Definimos un valor por defecto por si se te olvida ponerla en alguna página
+const { 
+    title = "404 - Respira y reencuentra el camino | Vita Tours", 
+    description = "Respira, reencuentra el camino y vuelve a explorar con nosotros." 
+} = Astro.props;
+---
+
+<Layout title={title} description={description}>
+    <div class="min-h-screen flex flex-col items-center justify-center bg-gray-100 text-center p-6">
+        <h1 class="text-6xl font-bold text-[#36AAF5] mb-4">404</h1>
+        <p class="text-xl text-gray-700 mb-8">Respira, reencuentra el camino y vuelve a explorar con nosotros.</p>
+        <a href="/" class="inline-block bg-[#36AAF5] hover:bg-[#38F5C4] text-white font-bold py-3 px-6 rounded-lg transition-colors uppercase tracking-widest">Volver al inicio</a>
+    </div>
+</Layout>
