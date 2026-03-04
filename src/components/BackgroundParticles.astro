@@ -1,0 +1,87 @@
+---
+// BackgroundParticles.astro
+---
+
+<div id="particle-container" class="fixed inset-0 pointer-events-none overflow-hidden z-0 bg-transparent">
+  <svg id="leaf-template" class="hidden absolute" width="50" height="50" viewBox="0 0 24 24" fill="none" xmlns="http://www.w3.org/2000/svg">
+    <path d="M20.24 12.24c-4.97 4.97-9 4.97-9 4.97s0-4.03 4.97-9c1.45-1.45 4.03-4.03 4.03-4.03s-2.58 2.58-4.03 4.03c-2.88 2.88-3.6 6.37-2.61 8.65L3 21l1.34-8.63c2.28.99 5.77.27 8.65-2.61 1.45-1.45 4.03-4.03 4.03-4.03s-2.58 2.58-4.03 4.03Z" fill="currentColor"/>
+  </svg>
+</div>
+
+<script>
+  import { gsap } from "gsap";
+
+  // Ejecutar cuando el DOM esté listo
+  document.addEventListener('DOMContentLoaded', () => {
+    const container = document.getElementById('particle-container');
+    const leafTemplate = document.getElementById('leaf-template');
+    const totalParticles = 50; // Aumentamos un poco la cantidad
+
+    if (!container || !leafTemplate) return;
+
+    function createParticle() {
+      if (!container || !leafTemplate) return;
+
+      // Clonar y configurar la partícula
+      const leaf = leafTemplate.cloneNode(true) as HTMLElement;
+      leaf.id = ""; // Quitamos el ID para que no se repita
+      leaf.classList.remove('hidden');
+      leaf.style.display = "block"; // Asegurar visibilidad
+      
+      // Color aleatorio de tu marca con opacidad baja
+      leaf.style.color = Math.random() > 0.5 ? '#38F5C4' : '#36AAF5';
+      leaf.style.opacity = (Math.random() * 0.3 + 0.1).toString();
+      
+      container.appendChild(leaf);
+
+      // --- VALORES INICIALES ---
+      const startX = Math.random() * window.innerWidth;
+      const startY = -50;
+      const size = Math.random() * 15 + 10;
+
+      gsap.set(leaf, {
+        x: startX,
+        y: startY,
+        width: size,
+        height: size,
+        rotation: Math.random() * 360,
+      });
+
+      // --- ANIMACIÓN DE CAÍDA HACIA LA DERECHA ---
+      gsap.to(leaf, {
+        duration: Math.random() * 8 + 7, // Caída más lenta y elegante
+        x: startX + 400 + (Math.random() * 300), // Desplazamiento fuerte a la derecha
+        y: window.innerHeight + 100,
+        rotation: Math.random() * 1000,
+        ease: "none",
+        onComplete: () => {
+          leaf.remove();
+          createParticle(); // Re-generar
+        }
+      });
+
+      // --- EFECTO DE BALANCEO (HOJA AL VIENTO) ---
+      gsap.to(leaf, {
+        duration: Math.random() * 2 + 2,
+        x: "+=80",
+        repeat: -1,
+        yoyo: true,
+        ease: "sine.inOut"
+      });
+    }
+
+    // Lanzar partículas con un intervalo para que no salgan todas a la vez
+    for (let i = 0; i < totalParticles; i++) {
+      setTimeout(createParticle, i * 400);
+    }
+  });
+</script>
+
+<style>
+  /* Evitar cualquier scroll accidental por las partículas */
+  #particle-container {
+    height: 100vh;
+    width: 100vw;
+    z-index: -1; /* Forzamos que esté detrás del contenido */
+  }
+</style>
