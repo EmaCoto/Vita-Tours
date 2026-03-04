@@ -1,5 +1,4 @@
 ---
-// src/pages/blogs/index.astro
 import Layout from '../../layouts/Layout.astro';
 import { getCollection } from 'astro:content';
 
@@ -14,7 +13,7 @@ const remainingPosts = sortedPosts.slice(1);
   <main class="bg-gray-100">
     
     <section class="relative pt-32 pb-20 px-6">
-      <div class="max-w-7xl mx-auto flex flex-col md:flex-row md:items-end justify-between gap-10 relative z-10">
+      <div class="max-w-7xl mx-auto flex flex-col md:flex-row md:items-end justify-between gap-10 relative z-10 px-6">
         <div class="reveal-header max-w-2xl">
           <span class="text-[#36AAF5] font-black uppercase tracking-[0.4em] text-[10px] block mb-6 italic">Exploración Humana</span>
           <h1 class="text-4xl md:text-6xl font-black uppercase italic text-gray-900 leading-[0.85] tracking-tighter">
